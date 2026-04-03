@@ -1,0 +1,17 @@
+[package]
+name = "password-manager"
+version = "1.0.0"
+description = "本地密码管理工具"
+authors = ["Developer"]
+license = "MIT"
+repository = ""
+default-run = "password-manager"
+edition = "2021"
+
+[dependencies]
+tauri = { version = "1.5", features = ["api-all"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[build-dependencies]
+tauri-build = "1.5"

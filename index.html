@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>我的密码管理器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Microsoft YaHei",sans-serif}
+body{background:#f5f7fa;color:#1d2129;transition:background-color 0.3s, color 0.3s}
+body.dark{background:#1a1a1a;color:#e0e0e0}
+.top-nav{height:60px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.1);display:flex;align-items:center;padding:0 20px;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:99;transition:background-color 0.3s, box-shadow 0.3s}
+body.dark .top-nav{background:#2d2d2d;box-shadow:0 1px 2px rgba(0,0,0,0.3)}
+.logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:bold;color:#165dff;cursor:pointer}
+.logo-icon{font-size:24px}
+.logo-text{font-size:20px}
+.slogan{font-size:14px;color:#4e5969}
+body.dark .slogan{color:#b0b0b0}
+.search-container{display:flex;gap:10px;margin-bottom:15px}
+.search-input{flex:1;height:40px;border:1px solid #e5e6eb;border-radius:8px;padding:0 12px;font-size:14px;outline:none;background:#fff;color:#1d2129}
+body.dark .search-input{background:#2d2d2d;border-color:#4d4d4d;color:#e0e0e0}
+.search-btn{white-space:nowrap}
+.container{display:flex;margin-top:60px;height:calc(100vh - 60px)}
+.sidebar{width:220px;background:#fff;box-shadow:1px 0 2px rgba(0,0,0,0.1);padding:20px 0;transition:background-color 0.3s, box-shadow 0.3s}
+body.dark .sidebar{background:#2d2d2d;box-shadow:1px 0 2px rgba(0,0,0,0.3)}
+.sidebar-item{height:44px;display:flex;align-items:center;padding:0 20px;gap:10px;cursor:pointer;font-size:14px}
+.sidebar-item.active{background:#e8f3ff;color:#165dff;font-weight:500}
+body.dark .sidebar-item.active{background:#1a365d;color:#165dff}
+.sidebar-item:hover{background:#f2f3f5}
+body.dark .sidebar-item:hover{background:#3d3d3d}
+.main{flex:1;padding:20px;overflow-y:auto}
+.card{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);padding:20px;transition:background-color 0.3s, box-shadow 0.3s}
+body.dark .card{background:#2d2d2d;box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.card-footer{margin-top:20px}
+.table{width:100%;border-collapse:collapse;margin-top:15px}
+.table th,.table td{padding:12px 10px;text-align:left;font-size:14px;border-bottom:1px solid #e5e6eb}
+body.dark .table th, body.dark .table td{border-bottom-color:#4d4d4d}
+.table th{color:#4e5969;font-weight:normal}
+body.dark .table th{color:#b0b0b0}
+.pwd-hide{font-family:monospace;letter-spacing:2px}
+.tag{padding:2px 8px;border-radius:4px;font-size:12px;background:#e8f3ff;color:#165dff}
+body.dark .tag{background:#1a365d;color:#4d9eff}
+.btn{padding:4px 10px;border:1px solid #165dff;border-radius:4px;color:#165dff;background:#fff;cursor:pointer;font-size:12px;transition:all 0.3s}
+.btn:hover{background:#165dff;color:#fff}
+body.dark .btn{background:#2d2d2d;color:#4d9eff;border-color:#4d9eff}
+body.dark .btn:hover{background:#4d9eff;color:#fff}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-content{background:#fff;width:420px;border-radius:8px;padding:24px;transition:background-color 0.3s}
+body.dark .modal-content{background:#2d2d2d}
+.modal-title{font-size:16px;font-weight:bold;margin-bottom:20px}
+.form-item{margin-bottom:16px}
+.form-item label{display:block;font-size:14px;margin-bottom:6px;color:#4e5969}
+body.dark .form-item label{color:#b0b0b0}
+.form-item input,.form-item select,.form-item textarea{width:100%;height:36px;border:1px solid #e5e6eb;border-radius:4px;padding:0 10px;outline:none;background:#fff;color:#1d2129}
+body.dark .form-item input, body.dark .form-item select, body.dark .form-item textarea{background:#3d3d3d;border-color:#4d4d4d;color:#e0e0e0}
+.form-item textarea{height:70px;padding:8px 10px;resize:none}
+.form-btn{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.btn-primary{background:#165dff;color:#fff;border:none;padding:8px 16px}
+body.dark .btn-primary{background:#4d9eff}
+.btn-default{background:#fff;color:#4e5969;border:1px solid #e5e6eb;padding:8px 16px}
+body.dark .btn-default{background:#2d2d2d;color:#b0b0b0;border-color:#4d4d4d}
+.btn-danger{background:#ff4d4f;color:#fff;border-color:#ff4d4f}
+body.dark .btn-danger{background:#ff7875;border-color:#ff7875}
+.page{display:none}
+.page.active{display:block}
+.welcome-content{text-align:center;padding:60px 0}
+.welcome-icon{font-size:64px;margin-bottom:20px}
+.welcome-title{font-size:24px;margin-bottom:10px}
+.welcome-desc{color:#4e5969;margin-bottom:30px}
+body.dark .welcome-desc{color:#b0b0b0}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:30px}
+.stat-card{background:#f8f9fa;padding:20px;border-radius:8px;text-align:center;transition:background-color 0.3s}
+body.dark .stat-card{background:#3d3d3d}
+.stat-number{font-size:28px;font-weight:bold;color:#165dff}
+body.dark .stat-number{color:#4d9eff}
+.stat-label{color:#4e5969;font-size:14px;margin-top:5px}
+body.dark .stat-label{color:#b0b0b0}
+.category-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.category-card{background:#f8f9fa;padding:20px;border-radius:8px;transition:background-color 0.3s}
+body.dark .category-card{background:#3d3d3d}
+.category-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.category-name{font-weight:bold}
+.category-count{color:#165dff}
+body.dark .category-count{color:#4d9eff}
+.setting-item{margin-bottom:20px}
+.setting-label{display:block;font-weight:bold;margin-bottom:5px}
+.setting-desc{color:#4e5969;font-size:14px;margin-bottom:10px}
+body.dark .setting-desc{color:#b0b0b0}
+.security-score{font-size:24px;font-weight:bold;margin-bottom:10px}
+.score-high{color:#52c41a}
+.score-medium{color:#faad14}
+.score-low{color:#f5222d}
+.help-section{margin-bottom:30px}
+.help-title{font-size:18px;font-weight:bold;margin-bottom:15px}
+.help-content{color:#4e5969;line-height:1.6}
+body.dark .help-content{color:#b0b0b0}
+.notification{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border:1px solid rgba(229,230,235,0.8);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:20px;z-index:1000;max-width:400px;transition:all 0.3s}
+body.dark .notification{background:rgba(45,45,45,0.95);border-color:rgba(77,77,77,0.8)}
+.notification-title{font-weight:bold;margin-bottom:8px}
+.notification-content{color:#4e5969;font-size:14px}
+body.dark .notification-content{color:#b0b0b0}
+.pagination{display:flex;justify-content:center;align-items:center;gap:8px;min-height:40px}
+.pagination button{padding:6px 12px;border:1px solid #e5e6eb;border-radius:4px;background:#fff;color:#1d2129;cursor:pointer;font-size:14px;transition:all 0.3s}
+body.dark .pagination button{background:#2d2d2d;border-color:#4d4d4d;color:#e0e0e0}
+.pagination button:hover{background:#f2f3f5}
+body.dark .pagination button:hover{background:#3d3d3d}
+.pagination button.active{background:#165dff;color:#fff;border-color:#165dff}
+body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
+.pagination button:disabled{opacity:0.5;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+<div class="logo" onclick="navigateTo('home')">
+<span class="logo-icon">🔒</span>
+<span class="logo-text">密码管理器</span>
+</div>
+<div class="slogan">安全守护，便捷管理｜本地存储，数据不离本机</div>
+</div>
+
+<div class="container">
+<div class="sidebar">
+<div class="sidebar-item active" onclick="navigateTo('home')">🏠 首页</div>
+<div class="sidebar-item" onclick="openModal()">➕ 新建密码</div>
+<div class="sidebar-item" onclick="navigateTo('categories')">📁 分类管理</div>
+<div class="sidebar-item" onclick="navigateTo('security')">🔍 安全审计</div>
+<div class="sidebar-item" onclick="navigateTo('settings')">⚙️ 设置</div>
+<div class="sidebar-item" onclick="navigateTo('help')">❓ 帮助</div>
+</div>
+
+<div class="main">
+<div id="home" class="page active">
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<h3>密码列表</h3>
+<div style="display:flex;align-items:center;gap:10px">
+<button class="btn" onclick="openModal()" style="background:#165dff;color:#fff;border-color:#165dff">新建密码</button>
+<select style="height:32px;padding:0 8px;border:1px solid #e5e6eb;border-radius:4px;font-size:14px" onchange="filterByCategory(this.value)">
+<option value="all">全部分类</option>
+<option value="社交媒体">社交媒体</option>
+<option value="银行金融">银行金融</option>
+<option value="邮箱">邮箱</option>
+<option value="工作">工作</option>
+<option value="其他">其他</option>
+</select>
+<button class="btn" onclick="exportSelected()">导出选中</button>
+<button class="btn" onclick="exportAll()">导出全部</button>
+<button class="btn" onclick="document.getElementById('importFile').click()">导入CSV</button>
+<input type="file" id="importFile" accept=".csv" style="display:none" onchange="importCSVFile(this)">
+</div>
+</div>
+<div class="search-container">
+<input type="text" class="search-input" placeholder="搜索服务名称/用户名" onkeypress="if(event.key==='Enter'){searchPasswords(this.value)}">
+<button class="btn search-btn" onclick="searchPasswords(document.querySelector('.search-input').value)">查询</button>
+</div>
+<div class="card-content">
+<table class="table">
+<tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th>网站URL</th><th>用户/邮箱</th><th>密码</th><th>创建日期</th><th>更新日期</th><th>分类</th><th>操作</th></tr>
+<tbody id="passwordList">
+<tr><td><input type="checkbox" class="pwd-checkbox"></td><td>微信</td><td>zhang123</td><td><span class="pwd-hide">••••••••</span></td><td>2026-01-01</td><td>2026-03-10</td><td><span class="tag">社交</span></td><td><button class="btn">编辑</button><button class="btn">删除</button></td></tr>
+<tr><td><input type="checkbox" class="pwd-checkbox"></td><td>支付宝</td><td>li_smith</td><td><span class="pwd-hide">••••••••</span></td><td>2026-01-05</td><td>2026-04-01</td><td><span class="tag">金融</span></td><td><button class="btn">编辑</button><button class="btn">删除</button></td></tr>
+<tr><td><input type="checkbox" class="pwd-checkbox"></td><td>网易邮箱</td><td>wang@163.com</td><td><span class="pwd-hide">••••••••</span></td><td>2026-02-11</td><td>2026-02-11</td><td><span class="tag">邮箱</span></td><td><button class="btn">编辑</button><button class="btn">删除</button></td></tr>
+</tbody>
+</table>
+</div>
+<div class="card-footer">
+<div id="pagination" class="pagination"></div>
+</div>
+</div>
+</div>
+
+<div id="welcome" class="page">
+<div class="card welcome-content">
+<div class="welcome-icon">🔒</div>
+<div class="welcome-title">欢迎使用密码管理器</div>
+<div class="welcome-desc">安全、便捷地管理您的所有密码</div>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-number">3</div>
+<div class="stat-label">已保存密码</div>
+</div>
+<div class="stat-card">
+<div class="stat-number">5</div>
+<div class="stat-label">分类数量</div>
+</div>
+<div class="stat-card">
+<div class="stat-number">98%</div>
+<div class="stat-label">安全评分</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="categories" class="page">
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<h3>分类管理</h3>
+<button class="btn" onclick="openAddCategoryModal()">添加分类</button>
+</div>
+<div class="category-list">
+<div class="category-card">
+<div class="category-header">
+<div>
+<span class="category-name">社交媒体</span>
+<span class="category-count">1</span>
+</div>
+<div>
+<button class="btn" onclick="editCategory('社交媒体')" style="margin-right:5px">编辑</button>
+<button class="btn" onclick="deleteCategory('社交媒体')">删除</button>
+</div>
+</div>
+<p>包含微信、QQ等社交平台密码</p>
+</div>
+<div class="category-card">
+<div class="category-header">
+<div>
+<span class="category-name">银行金融</span>
+<span class="category-count">1</span>
+</div>
+<div>
+<button class="btn" onclick="editCategory('银行金融')" style="margin-right:5px">编辑</button>
+<button class="btn" onclick="deleteCategory('银行金融')">删除</button>
+</div>
+</div>
+<p>包含支付宝、银行账户等金融密码</p>
+</div>
+<div class="category-card">
+<div class="category-header">
+<div>
+<span class="category-name">邮箱</span>
+<span class="category-count">1</span>
+</div>
+<div>
+<button class="btn" onclick="editCategory('邮箱')" style="margin-right:5px">编辑</button>
+<button class="btn" onclick="deleteCategory('邮箱')">删除</button>
+</div>
+</div>
+<p>包含各类邮箱账户密码</p>
+</div>
+<div class="category-card">
+<div class="category-header">
+<div>
+<span class="category-name">工作</span>
+<span class="category-count">0</span>
+</div>
+<div>
+<button class="btn" onclick="editCategory('工作')" style="margin-right:5px">编辑</button>
+<button class="btn" onclick="deleteCategory('工作')">删除</button>
+</div>
+</div>
+<p>包含工作相关账户密码</p>
+</div>
+<div class="category-card">
+<div class="category-header">
+<div>
+<span class="category-name">其他</span>
+<span class="category-count">0</span>
+</div>
+<div>
+<button class="btn" onclick="editCategory('其他')" style="margin-right:5px">编辑</button>
+<button class="btn" onclick="deleteCategory('其他')">删除</button>
+</div>
+</div>
+<p>其他类型的密码</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="security" class="page">
+<div class="card">
+<h3>安全审计</h3>
+<div style="margin-bottom:20px">
+<button class="btn btn-primary" onclick="scanSecurity()" style="margin-bottom:15px">🔍 扫描本地数据</button>
+</div>
+<div style="margin-bottom:30px">
+<h4>安全评分</h4>
+<div class="security-score" id="securityScore">98/100</div>
+<p id="securityScoreDesc">您的密码整体安全性良好</p>
+</div>
+<div>
+<h4>安全问题</h4>
+<div id="securityIssues" style="margin-bottom:20px">
+<p style="color:#4e5969">点击上方按钮开始扫描...</p>
+</div>
+<h4>安全建议</h4>
+<ul style="margin-left:20px;color:#4e5969">
+<li>建议定期更换密码</li>
+<li>使用不同的密码组合</li>
+<li>启用双因素认证</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="settings" class="page">
+<div class="card">
+<h3>设置</h3>
+<div class="setting-item">
+<label class="setting-label">自动保存</label>
+<p class="setting-desc">开启后自动保存密码更改</p>
+<input type="checkbox" checked id="autoSave">
+</div>
+<div class="setting-item">
+<label class="setting-label">开机自启动</label>
+<p class="setting-desc">开启后应用将在系统启动时自动运行</p>
+<input type="checkbox" id="autoStart">
+</div>
+<div class="setting-item">
+<label class="setting-label">密码长度</label>
+<p class="setting-desc">设置生成密码的默认长度</p>
+<input type="number" value="16" min="8" max="32">
+</div>
+<div class="setting-item">
+<label class="setting-label">主题</label>
+<p class="setting-desc">选择应用主题</p>
+<select id="themeSelect">
+<option value="light">浅色主题</option>
+<option value="dark">深色主题</option>
+</select>
+</div>
+<div class="setting-item">
+<label class="setting-label">数据备份</label>
+<p class="setting-desc">导出所有密码数据</p>
+<button class="btn" onclick="exportAll()">导出数据</button>
+</div>
+</div>
+</div>
+
+<div id="help" class="page">
+<div class="card">
+<h3>帮助中心</h3>
+<div class="help-section">
+<h4 class="help-title">如何使用密码管理器？</h4>
+<p class="help-content">
+1. 点击"新建密码"按钮添加新密码<br>
+2. 使用搜索框快速查找密码<br>
+3. 使用分类筛选功能按类别查看密码<br>
+4. 点击"显示"按钮查看密码明文<br>
+5. 支持导出选中密码或全部密码<br>
+6. 定期进行安全审计检查密码安全性
+</p>
+</div>
+<div class="help-section">
+<h4 class="help-title">安全提示</h4>
+<p class="help-content">
+- 不要将密码管理器的主密码告诉他人<br>
+- 定期备份密码数据<br>
+- 使用强密码作为主密码<br>
+- 启用双因素认证（如果支持）
+</p>
+</div>
+<div class="help-section">
+<h4 class="help-title">常见问题</h4>
+<p class="help-content">
+<strong>Q: 忘记主密码怎么办？</strong><br>
+A: 如果忘记主密码，将无法恢复密码数据，请务必妥善保管主密码。<br><br>
+<strong>Q: 如何备份密码数据？</strong><br>
+A: 在设置页面点击"导出数据"按钮即可备份所有密码。
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<div class="modal-title">新建密码</div>
+<div class="form-item"><label>网站/服务名称</label><input type="text" placeholder="请输入"></div>
+<div class="form-item"><label>用户名</label><input type="text" placeholder="请输入"></div>
+<div class="form-item"><label>密码</label><div style="position:relative"><input type="password" placeholder="请输入或生成" id="passwordInput"><span class="eye-icon" onclick="togglePasswordVisibility(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;">👁️</span></div><button style="margin-top:6px" class="btn" onclick="genPwd()">生成安全密码</button></div>
+<div class="form-item"><label>分类</label><select><option>社交媒体</option><option>银行金融</option><option>邮箱</option><option>工作</option><option>其他</option></select></div>
+<div class="form-item"><label>备注</label><textarea placeholder="可选"></textarea></div>
+<div class="form-btn"><button class="btn-default" onclick="closeModal()">取消</button><button class="btn-primary" onclick="savePwd()">保存</button></div>
+</div>
+</div>
+
+<div id="notification" class="notification" style="display:none">
+<div class="notification-title" id="notification-title"></div>
+<div class="notification-content" id="notification-content"></div>
+</div>
+
+<div class="modal" id="categoryModal">
+<div class="modal-content">
+<div class="modal-title" id="categoryModalTitle">添加分类</div>
+<div class="form-item"><label>分类名称</label><input type="text" id="categoryName" placeholder="请输入分类名称"></div>
+<div class="form-item"><label>分类描述</label><textarea id="categoryDesc" placeholder="请输入分类描述"></textarea></div>
+<div class="form-btn">
+<button class="btn-default" onclick="closeCategoryModal()">取消</button>
+<button class="btn-primary" onclick="saveCategory()">保存</button>
+</div>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY = 'password_manager_data';
+const CATEGORIES_KEY = 'password_manager_categories';
+const SETTINGS_KEY = 'password_manager_settings';
+let currentEditingCategory = null;
+let currentPage = 1;
+const itemsPerPage = 10;
+
+function openModal(){
+const categorySelect=document.querySelector('.form-item select');
+categorySelect.innerHTML='';
+const categories=getCategories();
+categories.forEach(category=>{
+const option=document.createElement('option');
+option.value=category.name;
+option.textContent=category.name;
+categorySelect.appendChild(option);
+});
+document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none'}
+
+function genPwd(){
+const uppercase='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const lowercase='abcdefghijklmnopqrstuvwxyz';
+const numbers='0123456789';
+const special='!@#$%^&*';
+const allChars=uppercase+lowercase+numbers+special;
+let pwd='';
+
+pwd+=uppercase.charAt(Math.floor(Math.random()*uppercase.length));
+pwd+=lowercase.charAt(Math.floor(Math.random()*lowercase.length));
+pwd+=numbers.charAt(Math.floor(Math.random()*numbers.length));
+pwd+=special.charAt(Math.floor(Math.random()*special.length));
+
+for(let i=4;i<16;i++){
+pwd+=allChars.charAt(Math.floor(Math.random()*allChars.length));
+}
+
+pwd=pwd.split('').sort(()=>Math.random()-0.5).join('');
+document.getElementById('passwordInput').value=pwd;
+}
+
+function togglePasswordVisibility(eyeIcon){
+const passwordInput=document.getElementById('passwordInput');
+if(passwordInput.type==='password'){
+passwordInput.type='text';
+eyeIcon.textContent='👁️';
+}else{
+passwordInput.type='password';
+eyeIcon.textContent='🔒';
+}
+}
+
+function getPasswords(){
+const data=localStorage.getItem(STORAGE_KEY);
+return data ? JSON.parse(data) : [];
+}
+
+function savePasswords(passwords){
+localStorage.setItem(STORAGE_KEY,JSON.stringify(passwords));
+}
+
+function savePwd(){
+const service=document.querySelectorAll('.form-item input')[0].value;
+const username=document.querySelectorAll('.form-item input')[1].value;
+const password=document.querySelectorAll('.form-item input')[2].value;
+const category=document.querySelector('.form-item select').value;
+const note=document.querySelector('.form-item textarea').value;
+
+if(!service||!username||!password){
+showNotification('错误','请填写必填字段！');
+return;
+}
+
+const passwords=getPasswords();
+const today=new Date().toISOString().split('T')[0];
+const modal=document.getElementById('modal');
+const editingId=modal.dataset.editingId;
+
+if(editingId){
+const index=passwords.findIndex(p=>p.id===parseInt(editingId));
+if(index!==-1){
+passwords[index].service=service;
+passwords[index].username=username;
+passwords[index].password=password;
+passwords[index].category=category;
+passwords[index].note=note;
+passwords[index].updatedAt=today;
+showNotification('成功','密码已更新！');
+}
+}else{
+passwords.push({
+id:Date.now(),
+service,
+username,
+password,
+category,
+note,
+createdAt:today,
+updatedAt:today
+});
+showNotification('成功','密码已保存！');
+}
+
+savePasswords(passwords);
+renderPasswords();
+closeModal();
+
+document.querySelectorAll('.form-item input').forEach(input=>input.value='');
+document.querySelector('.form-item textarea').value='';
+delete modal.dataset.editingId;
+}
+
+function renderPasswords(filteredPasswords=null){
+const passwords=filteredPasswords||getPasswords();
+const totalItems=passwords.length;
+const totalPages=Math.ceil(totalItems/itemsPerPage);
+
+const startIndex=(currentPage-1)*itemsPerPage;
+const endIndex=Math.min(startIndex+itemsPerPage,totalItems);
+const pagePasswords=passwords.slice(startIndex,endIndex);
+
+const tbody=document.getElementById('passwordList');
+tbody.innerHTML='';
+
+pagePasswords.forEach(pwd=>{
+const row=document.createElement('tr');
+row.innerHTML=`
+<td><input type="checkbox" class="pwd-checkbox" data-id="${pwd.id}"></td>
+<td>${pwd.service}</td>
+<td>${pwd.username}</td>
+<td><span class="pwd-hide">••••••••</span><button class="btn" onclick="togglePassword(this)" style="margin-left:8px">显示</button></td>
+<td>${pwd.createdAt}</td>
+<td>${pwd.updatedAt}</td>
+<td><span class="tag">${pwd.category}</span></td>
+<td><button class="btn" onclick="editPassword(${pwd.id})">编辑</button><button class="btn" onclick="deletePassword(${pwd.id})">删除</button></td>
+`;
+tbody.appendChild(row);
+});
+
+renderPagination(totalPages);
+}
+
+function togglePassword(btn){
+const pwdSpan=btn.previousElementSibling;
+const passwords=getPasswords();
+const row=btn.closest('tr');
+const pwdId=parseInt(row.querySelector('.pwd-checkbox').dataset.id);
+const pwd=passwords.find(p=>p.id===pwdId);
+
+if(btn.textContent==='显示'){
+pwdSpan.textContent=pwd.password;
+btn.textContent='隐藏';
+}else{
+pwdSpan.textContent='••••••••';
+btn.textContent='显示';
+}
+}
+
+
+
+function toggleSelectAll(){
+const selectAll=document.getElementById('selectAll');
+const checkboxes=document.querySelectorAll('.pwd-checkbox');
+checkboxes.forEach(cb=>cb.checked=selectAll.checked);
+}
+
+function exportSelected(){
+const checkboxes=document.querySelectorAll('.pwd-checkbox:checked');
+if(checkboxes.length===0){
+alert('请选择要导出的密码！');
+return;
+}
+
+const selectedIds=Array.from(checkboxes).map(cb=>parseInt(cb.dataset.id));
+const passwords=getPasswords().filter(pwd=>selectedIds.includes(pwd.id));
+exportPasswords(passwords,'selected_passwords');
+}
+
+function exportAll(){
+const passwords=getPasswords();
+if(passwords.length===0){
+alert('没有密码可导出！');
+return;
+}
+exportPasswords(passwords,'all_passwords');
+}
+
+function exportPasswords(passwords,filename){
+const headers=['url','username','password','createdAt','updatedAt','category','note'];
+const csvContent=[
+headers.join(','),
+...passwords.map(pwd=>[
+`"${pwd.service}"`,
+`"${pwd.username}"`,
+`"${pwd.password}"`,
+`"${pwd.createdAt}"`,
+`"${pwd.updatedAt}"`,
+`"${pwd.category}"`,
+`"${pwd.note||''}"`
+].join(','))
+].join('\n');
+
+const bom=new Uint8Array([0xEF,0xBB,0xBF]);
+const csvBytes=new TextEncoder().encode(csvContent);
+const blob=new Blob([bom,csvBytes],{type:'text/csv;charset=utf-8;'});
+const link=document.createElement('a');
+const url=URL.createObjectURL(blob);
+link.setAttribute('href',url);
+link.setAttribute('download',`${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+link.style.visibility='hidden';
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+}
+
+function importCSVFile(input){
+if(!input.files||input.files.length===0){
+return;
+}
+
+const file=input.files[0];
+const reader=new FileReader();
+
+reader.onload=function(e){
+try{
+const csvContent=e.target.result;
+const csvData=parseCSV(csvContent);
+if(csvData.data.length===0){
+showNotification('错误','CSV文件内容为空');
+return;
+}
+
+const mappedData=mapCSVData(csvData);
+const validData=validateCSVData(mappedData);
+
+if(validData.length===0){
+showNotification('错误','没有找到有效的密码数据');
+return;
+}
+
+saveImportedData(validData);
+showNotification('成功',`成功导入 ${validData.length} 条密码数据`);
+input.value='';
+}catch(error){
+showNotification('错误','CSV文件解析失败：'+error.message);
+input.value='';
+}
+};
+
+reader.readAsText(file);
+}
+
+function parseCSV(csvContent){
+const lines=csvContent.split('\n').filter(line=>line.trim()!=='');
+if(lines.length<2){
+throw new Error('CSV文件格式不正确，至少需要包含表头和一行数据');
+}
+
+const headers=lines[0].split(',').map(h=>h.trim().replace(/"/g,''));
+const data=[];
+
+for(let i=1;i<lines.length;i++){
+const values=lines[i].split(',').map(v=>v.trim().replace(/"/g,''));
+const row={};
+headers.forEach((header,index)=>{
+row[header]=values[index]||'';
+});
+data.push(row);
+}
+
+return {headers,data};
+}
+
+function mapCSVData(csvData){
+const {headers,data}=csvData;
+const mappedData=[];
+const today=new Date().toISOString().split('T')[0];
+
+// 字段映射规则
+const fieldMapping={
+'网站URL':['service','网站','服务','站点','网址','url','website','site','name'],
+'用户名':['username','user','账号','账户','用户','login','email'],
+'密码':['password','pwd','pass','密码串','密钥'],
+'分类':['category','类型','类别','分组','文件夹'],
+'备注':['note','备注','说明','描述','remark','description']
+};
+
+data.forEach(row=>{
+const password={
+id:Date.now()+Math.floor(Math.random()*1000),
+service:'',
+username:'',
+password:'',
+category:'其他',
+note:'',
+createdAt:today,
+updatedAt:today
+};
+
+// 自动映射字段
+Object.keys(fieldMapping).forEach(targetField=>{
+const sourceFields=fieldMapping[targetField];
+const matchingHeader=headers.find(header=>{
+const headerLower=header.toLowerCase();
+return sourceFields.some(sourceField=>headerLower.includes(sourceField));
+});
+
+if(matchingHeader){
+password[fieldMapping[targetField][0]]=row[matchingHeader];
+}
+});
+
+// 如果没有找到服务名称，尝试从其他字段获取
+if(!password.service){
+const possibleServiceFields=['网站','服务','站点','网址','url','website','site'];
+possibleServiceFields.forEach(field=>{
+const matchingHeader=headers.find(header=>header.toLowerCase().includes(field));
+if(matchingHeader&&row[matchingHeader]){
+password.service=row[matchingHeader];
+}
+});
+}
+
+// 如果有url字段但没有服务名称，使用url作为服务名称
+if(!password.service){
+const urlHeader=headers.find(header=>header.toLowerCase()==='url');
+if(urlHeader&&row[urlHeader]){
+password.service=row[urlHeader];
+}
+}
+
+mappedData.push(password);
+});
+
+return mappedData;
+}
+
+function validateCSVData(mappedData){
+return mappedData.filter(item=>{
+return item.service&&item.username&&item.password;
+});
+}
+
+function saveImportedData(importedData){
+const existingPasswords=getPasswords();
+const updatedPasswords=[...existingPasswords,...importedData];
+savePasswords(updatedPasswords);
+renderPasswords();
+}
+
+function deletePassword(id){
+if(confirm('确定要删除这个密码吗？')){
+const passwords=getPasswords();
+const updatedPasswords=passwords.filter(pwd=>pwd.id!==id);
+savePasswords(updatedPasswords);
+
+const totalPages=Math.ceil(updatedPasswords.length/itemsPerPage);
+if(currentPage>totalPages){
+currentPage=totalPages;
+}
+
+renderPasswords();
+showNotification('成功','密码已删除');
+}
+}
+
+function editPassword(id){
+const passwords=getPasswords();
+const password=passwords.find(p=>p.id===id);
+if(!password){
+showNotification('错误','未找到密码信息');
+return;
+}
+
+const modal=document.getElementById('modal');
+const modalTitle=document.querySelector('.modal-title');
+const formItems=document.querySelectorAll('.form-item input, .form-item select, .form-item textarea');
+
+modalTitle.textContent='编辑密码';
+formItems[0].value=password.service;
+formItems[1].value=password.username;
+formItems[2].value=password.password;
+formItems[3].value=password.category;
+formItems[4].value=password.note||'';
+
+modal.dataset.editingId=id;
+modal.style.display='flex';
+}
+
+function filterByCategory(category){
+const passwords=getPasswords();
+let filtered=passwords;
+
+if(category!=='all'){
+filtered=passwords.filter(pwd=>pwd.category===category);
+}
+
+renderPasswords(filtered);
+}
+
+let currentCategory='all';
+
+function searchPasswords(keyword){
+keyword=keyword.toLowerCase();
+const passwords=getPasswords();
+let filtered=passwords;
+
+if(currentCategory!=='all'){
+filtered=filtered.filter(pwd=>pwd.category===currentCategory);
+}
+
+if(keyword){
+filtered=filtered.filter(pwd=>
+pwd.service.toLowerCase().includes(keyword)||
+pwd.username.toLowerCase().includes(keyword)
+);
+}
+
+currentPage=1;
+renderPasswords(filtered);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+renderCategories();
+updateCategoryFilter();
+renderPasswords();
+initSettings();
+});
+
+function filterByCategory(category){
+currentCategory=category;
+const searchInput=document.querySelector('.search-input');
+searchPasswords(searchInput.value);
+}
+
+function navigateTo(pageId){
+document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
+document.querySelectorAll('.sidebar-item').forEach(item=>item.classList.remove('active'));
+
+document.getElementById(pageId).classList.add('active');
+event.target.classList.add('active');
+}
+
+function showNotification(title, content){
+const notification=document.getElementById('notification');
+const notificationTitle=document.getElementById('notification-title');
+const notificationContent=document.getElementById('notification-content');
+
+notificationTitle.textContent=title;
+notificationContent.textContent=content;
+notification.style.display='block';
+
+setTimeout(()=>{
+notification.style.display='none';
+},3000);
+}
+
+function getCategories(){
+const data=localStorage.getItem(CATEGORIES_KEY);
+return data ? JSON.parse(data) : [
+{name:'社交媒体', desc:'包含微信、QQ等社交平台密码'},
+{name:'银行金融', desc:'包含支付宝、银行账户等金融密码'},
+{name:'邮箱', desc:'包含各类邮箱账户密码'},
+{name:'工作', desc:'包含工作相关账户密码'},
+{name:'其他', desc:'其他类型的密码'}
+];
+}
+
+function saveCategories(categories){
+localStorage.setItem(CATEGORIES_KEY,JSON.stringify(categories));
+}
+
+function openAddCategoryModal(){
+currentEditingCategory=null;
+document.getElementById('categoryModalTitle').textContent='添加分类';
+document.getElementById('categoryName').value='';
+document.getElementById('categoryDesc').value='';
+document.getElementById('categoryModal').style.display='flex';
+}
+
+function closeCategoryModal(){
+document.getElementById('categoryModal').style.display='none';
+}
+
+function editCategory(categoryName){
+currentEditingCategory=categoryName;
+const categories=getCategories();
+const category=categories.find(c=>c.name===categoryName);
+if(category){
+document.getElementById('categoryModalTitle').textContent='编辑分类';
+document.getElementById('categoryName').value=category.name;
+document.getElementById('categoryDesc').value=category.desc;
+document.getElementById('categoryModal').style.display='flex';
+}
+}
+
+function renderCategories(){
+const categories=getCategories();
+const categoryList=document.querySelector('.category-list');
+categoryList.innerHTML='';
+
+categories.forEach(category=>{
+const card=document.createElement('div');
+card.className='category-card';
+card.innerHTML=`
+<div class="category-header">
+<div>
+<span class="category-name">${category.name}</span>
+<span class="category-count">0</span>
+</div>
+<div>
+<button class="btn" onclick="editCategory('${category.name}')" style="margin-right:5px">编辑</button>
+<button class="btn" onclick="deleteCategory('${category.name}')">删除</button>
+</div>
+</div>
+<p>${category.desc}</p>
+`;
+categoryList.appendChild(card);
+});
+
+updateCategoryCounts();
+updateCategoryFilter();
+}
+
+function updateCategoryFilter(){
+const categoryFilter=document.querySelector('select[onchange="filterByCategory(this.value)"]');
+categoryFilter.innerHTML='<option value="all">全部分类</option>';
+const categories=getCategories();
+categories.forEach(category=>{
+const option=document.createElement('option');
+option.value=category.name;
+option.textContent=category.name;
+categoryFilter.appendChild(option);
+});
+}
+
+function saveCategory(){
+const name=document.getElementById('categoryName').value.trim();
+const desc=document.getElementById('categoryDesc').value.trim();
+
+if(!name){
+showNotification('错误','分类名称不能为空');
+return;
+}
+
+const categories=getCategories();
+
+if(currentEditingCategory){
+const index=categories.findIndex(c=>c.name===currentEditingCategory);
+if(index!==-1){
+categories[index].name=name;
+categories[index].desc=desc;
+}
+}else{
+if(categories.some(c=>c.name===name)){
+showNotification('错误','分类名称已存在');
+return;
+}
+categories.push({name, desc});
+}
+
+saveCategories(categories);
+closeCategoryModal();
+showNotification('成功','分类保存成功');
+renderCategories();
+}
+
+function deleteCategory(categoryName){
+if(categoryName==='其他'){
+showNotification('提示','"其他"分类不能删除');
+return;
+}
+
+const passwords=getPasswords();
+const count=passwords.filter(p=>p.category===categoryName).length;
+
+if(count>0){
+if(!confirm(`该分类下有${count}个密码，删除后这些密码将被移动到"其他"分类，确定要删除吗？`)){
+return;
+}
+
+passwords.forEach(pwd=>{
+if(pwd.category===categoryName){
+pwd.category='其他';
+}
+});
+savePasswords(passwords);
+}
+
+const categories=getCategories();
+const updatedCategories=categories.filter(c=>c.name!==categoryName);
+saveCategories(updatedCategories);
+showNotification('成功','分类删除成功');
+renderCategories();
+}
+
+function updateCategoryCounts(){
+const passwords=getPasswords();
+const categories=getCategories();
+
+categories.forEach(category=>{
+const count=passwords.filter(p=>p.category===category.name).length;
+const cards=document.querySelectorAll('.category-card');
+cards.forEach(card=>{
+const nameElement=card.querySelector('.category-name');
+if(nameElement && nameElement.textContent===category.name){
+const countElement=card.querySelector('.category-count');
+if(countElement){
+countElement.textContent=count;
+}
+}
+});
+});
+}
+
+function getSettings(){
+const data=localStorage.getItem(SETTINGS_KEY);
+return data ? JSON.parse(data) : {
+autoSave: true,
+autoStart: false,
+passwordLength: 16,
+theme: 'light'
+};
+}
+
+function saveSettings(settings){
+localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));
+}
+
+function loadSettings(){
+const settings=getSettings();
+document.getElementById('autoSave').checked=settings.autoSave;
+document.getElementById('autoStart').checked=settings.autoStart;
+document.getElementById('themeSelect').value=settings.theme;
+applyTheme(settings.theme);
+}
+
+function applyTheme(theme){
+if(theme==='dark'){
+document.body.classList.add('dark');
+}else{
+document.body.classList.remove('dark');
+}
+}
+
+function renderPagination(totalPages){
+const pagination=document.getElementById('pagination');
+pagination.innerHTML='';
+
+if(totalPages<=1){
+pagination.style.display='none';
+return;
+}
+
+pagination.style.display='flex';
+
+const createPageButton=(pageNum,label)=>{
+const button=document.createElement('button');
+button.textContent=label;
+button.onclick=()=>{
+if(!button.disabled){
+goToPage(pageNum);
+}
+};
+if(pageNum===currentPage){
+button.classList.add('active');
+}
+return button;
+};
+
+const prevButton=createPageButton(currentPage-1,'上一页');
+prevButton.disabled=currentPage<=1;
+pagination.appendChild(prevButton);
+
+const maxVisiblePages=5;
+let startPage=Math.max(1,currentPage-Math.floor(maxVisiblePages/2));
+let endPage=Math.min(totalPages,startPage+maxVisiblePages-1);
+
+if(endPage-startPage+1<maxVisiblePages){
+startPage=Math.max(1,endPage-maxVisiblePages+1);
+}
+
+for(let i=startPage;i<=endPage;i++){
+pagination.appendChild(createPageButton(i,i.toString()));
+}
+
+const nextButton=createPageButton(currentPage+1,'下一页');
+nextButton.disabled=currentPage>=totalPages;
+pagination.appendChild(nextButton);
+}
+
+function goToPage(pageNum){
+currentPage=pageNum;
+renderPasswords();
+}
+
+function initSettings(){
+loadSettings();
+
+document.getElementById('autoSave').addEventListener('change',(e)=>{
+const settings=getSettings();
+settings.autoSave=e.target.checked;
+saveSettings(settings);
+showNotification('设置已保存','自动保存设置已更新');
+});
+
+document.getElementById('autoStart').addEventListener('change',(e)=>{
+const settings=getSettings();
+settings.autoStart=e.target.checked;
+saveSettings(settings);
+showNotification('设置已保存','开机自启动设置已更新');
+});
+
+document.getElementById('themeSelect').addEventListener('change',(e)=>{
+const theme=e.target.value;
+applyTheme(theme);
+const settings=getSettings();
+settings.theme=theme;
+saveSettings(settings);
+showNotification('设置已保存','主题已更新');
+});
+}
+
+function scanSecurity(){
+const passwords=getPasswords();
+if(passwords.length===0){
+showNotification('提示','没有密码数据可供扫描');
+return;
+}
+
+const issues=[];
+let score=100;
+
+// 检测重复密码
+const passwordCount={};
+passwords.forEach(pwd=>{
+if(passwordCount[pwd.password]){
+passwordCount[pwd.password]++;
+}else{
+passwordCount[pwd.password]=1;
+}
+});
+
+Object.entries(passwordCount).forEach(([password,count])=>{
+if(count>1){
+issues.push({
+type:'重复密码',
+description:`发现 ${count} 个账号使用相同的密码`,
+severity:'高风险',
+color:'#f5222d'
+});
+score-=10;
+}
+});
+
+// 检测弱密码
+const weakPasswordPatterns=[
+{pattern:/^[a-zA-Z]+$/,description:'仅包含字母'},
+{pattern:/^[0-9]+$/,description:'仅包含数字'},
+{pattern:/^.{1,7}$/,description:'密码长度不足8位'},
+{pattern:/^12345678|password|123456|qwerty|admin|root|123456789|1234567|12345$/,description:'使用常见弱密码'},
+{pattern:/^(\d)\1{5,}$/,description:'包含连续重复数字'},
+{pattern:/^[a-z]{6,}$/,description:'仅包含小写字母'},
+{pattern:/^[A-Z]{6,}$/,description:'仅包含大写字母'}
+];
+
+passwords.forEach(pwd=>{
+weakPasswordPatterns.forEach(pattern=>{
+if(pattern.pattern.test(pwd.password.toLowerCase())){
+issues.push({
+type:'弱密码',
+description:`账号 "${pwd.service}" 使用弱密码: ${pattern.description}`,
+severity:'中风险',
+color:'#faad14'
+});
+score-=5;
+}
+});
+});
+
+// 更新安全评分
+score=Math.max(0,score);
+const scoreElement=document.getElementById('securityScore');
+const scoreDesc=document.getElementById('securityScoreDesc');
+
+scoreElement.textContent=`${score}/100`;
+scoreElement.className='security-score';
+
+if(score>=80){
+scoreElement.classList.add('score-high');
+scoreDesc.textContent='您的密码整体安全性良好';
+}else if(score>=60){
+scoreElement.classList.add('score-medium');
+scoreDesc.textContent='您的密码安全性一般';
+}else{
+scoreElement.classList.add('score-low');
+scoreDesc.textContent='您的密码安全性较差，需要及时改进';
+}
+
+// 显示安全问题
+const issuesContainer=document.getElementById('securityIssues');
+if(issues.length===0){
+issuesContainer.innerHTML='<p style="color:#52c41a">✅ 未发现安全问题，密码安全性良好</p>';
+}else{
+let html='<ul style="margin-left:20px">';
+issues.forEach(issue=>{
+html+=`<li style="color:${issue.color};margin-bottom:8px">
+<strong>${issue.type}</strong> - ${issue.description} <span style="font-size:12px;color:#4e5969">(${issue.severity})</span>
+</li>`;
+});
+html+='</ul>';
+issuesContainer.innerHTML=html;
+}
+
+showNotification('扫描完成',`发现 ${issues.length} 个安全问题`);
+}
+</script>
+</body>
+</html>
