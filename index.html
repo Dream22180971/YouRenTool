@@ -687,7 +687,7 @@ startSession();
 
 // 重置密码
 function resetPassword() {
-if (confirm('⚠️ 警告！重置密码将清空所有密码数据，且无法恢复。确定要继续吗？')) {
+if (confirm('⚠️ 警告！重置密码将清空所有密码数据和分类数据，且无法恢复。确定要继续吗？')) {
 // 删除所有数据
 localStorage.removeItem(STORAGE_KEY);
 localStorage.removeItem(CATEGORIES_KEY);
@@ -696,6 +696,10 @@ localStorage.removeItem(AUTH_KEY);
 // 清空页面数据
 savePasswords([]);
 saveCategories([]);
+
+// 更新分类显示
+renderCategories();
+updateCategoryCounts();
 
 // 显示设置密码界面
 document.body.classList.remove('locked');
