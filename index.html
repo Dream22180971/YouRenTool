@@ -1206,7 +1206,7 @@ return mappedData;
 
 function validateCSVData(mappedData){
 return mappedData.filter(item=>{
-return item.service&&item.username&&item.password;
+return item.password; // 只要求密码字段必须有值
 });
 }
 
