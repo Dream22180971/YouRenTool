@@ -18,6 +18,7 @@ body.dark .slogan{color:#b0b0b0}
 .search-container{display:flex;gap:10px;margin-bottom:15px}
 .search-input{flex:1;height:40px;border:1px solid #e5e6eb;border-radius:8px;padding:0 12px;font-size:14px;outline:none;background:#fff;color:#1d2129}
 body.dark .search-input{background:#2d2d2d;border-color:#4d4d4d;color:#e0e0e0}
+body.dark select{background:#2d2d2d;border-color:#4d4d4d;color:#e0e0e0}
 .search-btn{white-space:nowrap}
 .container{display:flex;margin-top:60px;height:calc(100vh - 60px)}
 .sidebar{width:220px;background:#fff;box-shadow:1px 0 2px rgba(0,0,0,0.1);padding:20px 0;transition:background-color 0.3s, box-shadow 0.3s}
@@ -55,11 +56,11 @@ body.dark .form-item input, body.dark .form-item select, body.dark .form-item te
 .form-item textarea{height:70px;padding:8px 10px;resize:none}
 .form-btn{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .btn-primary{background:#165dff;color:#fff;border:none;padding:8px 16px}
-body.dark .btn-primary{background:#4d9eff}
+body.dark .btn-primary{background:#4d9eff;color:#fff}
 .btn-default{background:#fff;color:#4e5969;border:1px solid #e5e6eb;padding:8px 16px}
 body.dark .btn-default{background:#2d2d2d;color:#b0b0b0;border-color:#4d4d4d}
 .btn-danger{background:#ff4d4f;color:#fff;border-color:#ff4d4f}
-body.dark .btn-danger{background:#ff7875;border-color:#ff7875}
+body.dark .btn-danger{background:#ff4d4f;color:#fff;border-color:#ff4d4f}
 .page{display:none}
 .page.active{display:block}
 .welcome-content{text-align:center;padding:60px 0}
@@ -74,6 +75,11 @@ body.dark .stat-card{background:#3d3d3d}
 body.dark .stat-number{color:#4d9eff}
 .stat-label{color:#4e5969;font-size:14px;margin-top:5px}
 body.dark .stat-label{color:#b0b0b0}
+body.dark h3, body.dark h4{color:#e0e0e0}
+body.dark p{color:#b0b0b0}
+body.dark li{color:#b0b0b0}
+body.dark #securityIssues p{color:#b0b0b0}
+body.dark #securityScoreDesc{color:#b0b0b0}
 .category-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
 .category-card{background:#f8f9fa;padding:20px;border-radius:8px;transition:background-color 0.3s}
 body.dark .category-card{background:#3d3d3d}
@@ -105,7 +111,11 @@ body.dark .pagination button{background:#2d2d2d;border-color:#4d4d4d;color:#e0e0
 body.dark .pagination button:hover{background:#3d3d3d}
 .pagination button.active{background:#165dff;color:#fff;border-color:#165dff}
 body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
-.pagination button:disabled{opacity:0.5;cursor:not-allowed}
+body.dark .pagination button:disabled{opacity:0.5;cursor:not-allowed}
+body.dark a{color:#4d9eff}
+body.dark a:hover{color:#6bb6ff}
+body.dark .btn-primary{background:#4d9eff;color:#fff;border:none}
+body.dark .btn-primary:hover{background:#6bb6ff}
 </style>
 </head>
 <body>
@@ -120,12 +130,13 @@ body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
 
 <div class="container">
 <div class="sidebar">
-<div class="sidebar-item active" onclick="navigateTo('home')">🏠 首页</div>
+<div class="sidebar-item active" onclick="navigateTo('home', event)">🏠 首页</div>
 <div class="sidebar-item" onclick="openModal()">➕ 新建密码</div>
-<div class="sidebar-item" onclick="navigateTo('categories')">📁 分类管理</div>
-<div class="sidebar-item" onclick="navigateTo('security')">🔍 安全审计</div>
-<div class="sidebar-item" onclick="navigateTo('settings')">⚙️ 设置</div>
-<div class="sidebar-item" onclick="navigateTo('help')">❓ 帮助</div>
+<div class="sidebar-item" onclick="navigateTo('categories', event)">📁 分类管理</div>
+<div class="sidebar-item" onclick="navigateTo('security', event)">🔍 安全审计</div>
+<div class="sidebar-item" onclick="navigateTo('settings', event)">⚙️ 设置</div>
+<div class="sidebar-item" onclick="navigateTo('help', event)">❓ 帮助</div>
+<div class="sidebar-item" onclick="navigateTo('about', event)">ℹ️ 关于</div>
 </div>
 
 <div class="main">
@@ -134,7 +145,7 @@ body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
 <h3>密码列表</h3>
 <div style="display:flex;align-items:center;gap:10px">
-<button class="btn" onclick="openModal()" style="background:#165dff;color:#fff;border-color:#165dff">新建密码</button>
+<button class="btn btn-primary" onclick="openModal()">新建密码</button>
 <select style="height:32px;padding:0 8px;border:1px solid #e5e6eb;border-radius:4px;font-size:14px" onchange="filterByCategory(this.value)">
 <option value="all">全部分类</option>
 <option value="社交媒体">社交媒体</option>
@@ -143,9 +154,12 @@ body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
 <option value="工作">工作</option>
 <option value="其他">其他</option>
 </select>
+
 <button class="btn" onclick="exportSelected()">导出选中</button>
 <button class="btn" onclick="exportAll()">导出全部</button>
 <button class="btn" onclick="document.getElementById('importFile').click()">导入CSV</button>
+<button class="btn" onclick="refreshPasswordList()">刷新同步</button>
+<button class="btn btn-danger" onclick="clearAllPasswords()">清空列表</button>
 <input type="file" id="importFile" accept=".csv" style="display:none" onchange="importCSVFile(this)">
 </div>
 </div>
@@ -155,7 +169,7 @@ body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
 </div>
 <div class="card-content">
 <table class="table">
-<tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th>网站URL</th><th>用户/邮箱</th><th>密码</th><th>创建日期</th><th>更新日期</th><th>分类</th><th>操作</th></tr>
+<tr><th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th><th>网站URL</th><th>用户/邮箱</th><th>密码</th><th onclick="sortByColumn('createdAt')" style="cursor:pointer">创建日期 <span id="createdAtSortIcon">↕</span></th><th onclick="sortByColumn('updatedAt')" style="cursor:pointer">更新日期 <span id="updatedAtSortIcon">↕</span></th><th>分类</th><th>操作</th></tr>
 <tbody id="passwordList">
 <tr><td><input type="checkbox" class="pwd-checkbox"></td><td>微信</td><td>zhang123</td><td><span class="pwd-hide">••••••••</span></td><td>2026-01-01</td><td>2026-03-10</td><td><span class="tag">社交</span></td><td><button class="btn">编辑</button><button class="btn">删除</button></td></tr>
 <tr><td><input type="checkbox" class="pwd-checkbox"></td><td>支付宝</td><td>li_smith</td><td><span class="pwd-hide">••••••••</span></td><td>2026-01-05</td><td>2026-04-01</td><td><span class="tag">金融</span></td><td><button class="btn">编辑</button><button class="btn">删除</button></td></tr>
@@ -195,7 +209,7 @@ body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
 <h3>分类管理</h3>
-<button class="btn" onclick="openAddCategoryModal()">添加分类</button>
+<button class="btn btn-primary" onclick="openAddCategoryModal()">添加分类</button>
 </div>
 <div class="category-list">
 <div class="category-card">
@@ -281,10 +295,10 @@ body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
 <div>
 <h4>安全问题</h4>
 <div id="securityIssues" style="margin-bottom:20px">
-<p style="color:#4e5969">点击上方按钮开始扫描...</p>
+<p>点击上方按钮开始扫描...</p>
 </div>
 <h4>安全建议</h4>
-<ul style="margin-left:20px;color:#4e5969">
+<ul style="margin-left:20px">
 <li>建议定期更换密码</li>
 <li>使用不同的密码组合</li>
 <li>启用双因素认证</li>
@@ -309,7 +323,7 @@ body.dark .pagination button.active{background:#4d9eff;border-color:#4d9eff}
 <div class="setting-item">
 <label class="setting-label">密码长度</label>
 <p class="setting-desc">设置生成密码的默认长度</p>
-<input type="number" value="16" min="8" max="32">
+<input type="number" id="passwordLength" value="16" min="8" max="32">
 </div>
 <div class="setting-item">
 <label class="setting-label">主题</label>
@@ -361,14 +375,83 @@ A: 在设置页面点击"导出数据"按钮即可备份所有密码。
 </div>
 </div>
 </div>
+
+<div id="about" class="page">
+<div class="card">
+<h3>关于密码管理器</h3>
+<div style="text-align:left;margin-bottom:30px">
+<div style="font-size:64px;margin-bottom:20px">🔒</div>
+<div style="font-size:24px;font-weight:bold;margin-bottom:10px">密码管理器</div>
+<div style="margin-bottom:20px">版本 1.0.0</div>
+</div>
+
+<div class="help-section">
+<h4 class="help-title">开发者信息</h4>
+<p class="help-content">
+<strong>开发者：</strong>白日梦想家<br>
+<strong>开发目的：</strong>为用户提供安全、便捷的密码管理解决方案，帮助用户更好地管理和保护个人密码信息。
+</p>
+</div>
+
+<div class="help-section">
+<h4 class="help-title">软件介绍</h4>
+<p class="help-content">
+密码管理器是一款本地存储的密码管理工具，具有以下特点：<br>
+- 本地存储，数据安全可靠<br>
+- 支持密码分类管理<br>
+- CSV导入/导出功能<br>
+- 密码安全审计<br>
+- 搜索和筛选功能<br>
+- 暗黑模式支持<br>
+- 数据备份与恢复
+</p>
+</div>
+
+<div class="help-section">
+<h4 class="help-title">更新日志</h4>
+<p class="help-content">
+<strong>v1.0.0 (2026-04-04)</strong><br>
+- 初始版本发布<br>
+- 实现基本密码管理功能<br>
+- 添加CSV导入/导出功能<br>
+- 实现密码安全审计功能<br>
+- 添加分类管理功能<br>
+- 支持暗黑模式<br>
+- 添加数据备份功能<br>
+- 实现搜索和筛选功能<br>
+- 添加清空列表和刷新功能<br>
+- 优化用户界面体验
+</p>
+</div>
+
+<div class="help-section">
+<h4 class="help-title">技术栈</h4>
+<p class="help-content">
+- 前端：HTML5, CSS3, JavaScript<br>
+- 框架：Tauri (Rust + WebView2)<br>
+- 构建工具：Vite<br>
+- 数据存储：localStorage<br>
+- 开发语言：Rust, JavaScript
+</p>
+</div>
+
+<div class="help-section">
+<h4 class="help-title">联系方式</h4>
+<p class="help-content">
+如有问题或建议，请通过GitHub项目页面联系开发者。<br>
+GitHub: <a href="https://github.com/Dream22180971/KeyGuardTool" target="_blank">KeyGuardTool</a>
+</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 
 <div class="modal" id="modal">
 <div class="modal-content">
 <div class="modal-title">新建密码</div>
-<div class="form-item"><label>网站/服务名称</label><input type="text" placeholder="请输入"></div>
-<div class="form-item"><label>用户名</label><input type="text" placeholder="请输入"></div>
+<div class="form-item"><label>网站URL</label><input type="text" placeholder="请输入"></div>
+<div class="form-item"><label>用户/邮箱</label><input type="text" placeholder="请输入"></div>
 <div class="form-item"><label>密码</label><div style="position:relative"><input type="password" placeholder="请输入或生成" id="passwordInput"><span class="eye-icon" onclick="togglePasswordVisibility(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;">👁️</span></div><button style="margin-top:6px" class="btn" onclick="genPwd()">生成安全密码</button></div>
 <div class="form-item"><label>分类</label><select><option>社交媒体</option><option>银行金融</option><option>邮箱</option><option>工作</option><option>其他</option></select></div>
 <div class="form-item"><label>备注</label><textarea placeholder="可选"></textarea></div>
@@ -400,6 +483,8 @@ const SETTINGS_KEY = 'password_manager_settings';
 let currentEditingCategory = null;
 let currentPage = 1;
 const itemsPerPage = 10;
+let currentCategory='all';
+let currentSort='none';
 
 function openModal(){
 const categorySelect=document.querySelector('.form-item select');
@@ -423,15 +508,22 @@ const special='!@#$%^&*';
 const allChars=uppercase+lowercase+numbers+special;
 let pwd='';
 
+// 获取设置的密码长度
+const settings = getSettings();
+const passwordLength = settings.passwordLength || 16;
+
+// 确保至少包含每种字符类型
 pwd+=uppercase.charAt(Math.floor(Math.random()*uppercase.length));
 pwd+=lowercase.charAt(Math.floor(Math.random()*lowercase.length));
 pwd+=numbers.charAt(Math.floor(Math.random()*numbers.length));
 pwd+=special.charAt(Math.floor(Math.random()*special.length));
 
-for(let i=4;i<16;i++){
+// 生成剩余的字符
+for(let i=4;i<passwordLength;i++){
 pwd+=allChars.charAt(Math.floor(Math.random()*allChars.length));
 }
 
+// 打乱密码
 pwd=pwd.split('').sort(()=>Math.random()-0.5).join('');
 document.getElementById('passwordInput').value=pwd;
 }
@@ -463,8 +555,53 @@ const password=document.querySelectorAll('.form-item input')[2].value;
 const category=document.querySelector('.form-item select').value;
 const note=document.querySelector('.form-item textarea').value;
 
-if(!service||!username||!password){
-showNotification('错误','请填写必填字段！');
+// 验证必填字段
+if(!service.trim()){
+showNotification('错误','请填写网站URL！');
+return;
+}
+
+if(!username.trim()){
+showNotification('错误','请填写用户名/邮箱！');
+return;
+}
+
+if(!password.trim()){
+showNotification('错误','请填写密码！');
+return;
+}
+
+// 验证网站URL格式
+const urlPattern=/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+if(!urlPattern.test(service) && !service.includes('.')){
+showNotification('错误','请输入有效的网站URL或服务名称！');
+return;
+}
+
+// 验证密码强度
+if(password.length<8){
+showNotification('错误','密码长度至少为8位！');
+return;
+}
+
+if(!/[A-Z]/.test(password)){
+showNotification('错误','密码应包含至少一个大写字母！');
+return;
+}
+
+if(!/[a-z]/.test(password)){
+showNotification('错误','密码应包含至少一个小写字母！');
+return;
+}
+
+if(!/[0-9]/.test(password)){
+showNotification('错误','密码应包含至少一个数字！');
+return;
+}
+
+// 验证用户名格式
+if(username.length<3){
+showNotification('错误','用户名长度至少为3位！');
 return;
 }
 
@@ -500,6 +637,7 @@ showNotification('成功','密码已保存！');
 
 savePasswords(passwords);
 renderPasswords();
+updateCategoryCounts();
 closeModal();
 
 document.querySelectorAll('.form-item input').forEach(input=>input.value='');
@@ -508,7 +646,34 @@ delete modal.dataset.editingId;
 }
 
 function renderPasswords(filteredPasswords=null){
-const passwords=filteredPasswords||getPasswords();
+let passwords;
+if(filteredPasswords){
+passwords=filteredPasswords;
+}else{
+// 当没有传入参数时，应用当前的排序和筛选
+const allPasswords=getPasswords();
+let filtered=allPasswords;
+
+// 应用分类筛选
+if(currentCategory!=='all'){
+filtered=filtered.filter(pwd=>pwd.category===currentCategory);
+}
+
+// 应用搜索关键词
+const searchInput=document.querySelector('.search-input');
+const keyword=searchInput?searchInput.value.toLowerCase():'';
+if(keyword){
+filtered=filtered.filter(pwd=>
+pwd.service.toLowerCase().includes(keyword)||
+pwd.username.toLowerCase().includes(keyword)
+);
+}
+
+// 应用排序
+filtered=applySort(filtered,currentSort);
+passwords=filtered;
+}
+
 const totalItems=passwords.length;
 const totalPages=Math.ceil(totalItems/itemsPerPage);
 
@@ -761,6 +926,20 @@ showNotification('成功','密码已删除');
 }
 }
 
+function clearAllPasswords(){
+if(confirm('警告：此操作将清空所有密码数据，且无法恢复！确定要继续吗？')){
+savePasswords([]);
+renderPasswords();
+showNotification('成功','所有密码已清空');
+}
+}
+
+function refreshPasswordList(){
+currentPage=1;
+renderPasswords();
+showNotification('成功','密码列表已刷新');
+}
+
 function editPassword(id){
 const passwords=getPasswords();
 const password=passwords.find(p=>p.id===id);
@@ -795,8 +974,6 @@ filtered=passwords.filter(pwd=>pwd.category===category);
 renderPasswords(filtered);
 }
 
-let currentCategory='all';
-
 function searchPasswords(keyword){
 keyword=keyword.toLowerCase();
 const passwords=getPasswords();
@@ -813,8 +990,71 @@ pwd.username.toLowerCase().includes(keyword)
 );
 }
 
+filtered=applySort(filtered,currentSort);
 currentPage=1;
 renderPasswords(filtered);
+}
+
+function applySort(passwords,sortValue){
+if(sortValue==='none'){
+return passwords;
+}
+
+const [field,order]=sortValue.split('-');
+return [...passwords].sort((a,b)=>{
+if(order==='asc'){
+return a[field].localeCompare(b[field]);
+}else{
+return b[field].localeCompare(a[field]);
+}
+});
+}
+
+function sortByColumn(column){
+// 切换排序方向
+const currentSortValue=currentSort;
+let newSortValue;
+
+if(currentSortValue.startsWith(column)){
+// 如果当前已经按该列排序，则切换方向
+const currentOrder=currentSortValue.split('-')[1];
+const newOrder=currentOrder==='asc'?'desc':'asc';
+newSortValue=`${column}-${newOrder}`;
+}else{
+// 否则默认按降序排序
+newSortValue=`${column}-desc`;
+}
+
+// 更新排序状态
+currentSort=newSortValue;
+
+// 更新排序图标
+updateSortIcons();
+
+
+
+// 重新搜索并排序
+const searchInput=document.querySelector('.search-input');
+searchPasswords(searchInput.value);
+}
+
+function updateSortIcons(){
+// 重置所有图标
+const createdAtIcon=document.getElementById('createdAtSortIcon');
+const updatedAtIcon=document.getElementById('updatedAtSortIcon');
+
+createdAtIcon.textContent='↕';
+updatedAtIcon.textContent='↕';
+
+// 根据当前排序更新对应图标
+if(currentSort!=='none'){
+const [field,order]=currentSort.split('-');
+if(field==='createdAt'){
+createdAtIcon.textContent=order==='asc'?'↑':'↓';
+}else if(field==='updatedAt'){
+updatedAtIcon.textContent=order==='asc'?'↑':'↓';
+}
+}
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -830,12 +1070,14 @@ const searchInput=document.querySelector('.search-input');
 searchPasswords(searchInput.value);
 }
 
-function navigateTo(pageId){
+function navigateTo(pageId, event){
 document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
 document.querySelectorAll('.sidebar-item').forEach(item=>item.classList.remove('active'));
 
 document.getElementById(pageId).classList.add('active');
+if(event && event.target){
 event.target.classList.add('active');
+}
 }
 
 function showNotification(title, content){
@@ -1028,6 +1270,7 @@ function loadSettings(){
 const settings=getSettings();
 document.getElementById('autoSave').checked=settings.autoSave;
 document.getElementById('autoStart').checked=settings.autoStart;
+document.getElementById('passwordLength').value=settings.passwordLength;
 document.getElementById('themeSelect').value=settings.theme;
 applyTheme(settings.theme);
 }
@@ -1116,6 +1359,18 @@ settings.theme=theme;
 saveSettings(settings);
 showNotification('设置已保存','主题已更新');
 });
+
+// 密码长度设置
+const passwordLengthInput = document.getElementById('passwordLength');
+passwordLengthInput.addEventListener('change', (e) => {
+const length = parseInt(e.target.value);
+if (length >= 8 && length <= 32) {
+const settings = getSettings();
+settings.passwordLength = length;
+saveSettings(settings);
+showNotification('设置已保存','密码长度设置已更新');
+}
+});
 }
 
 function scanSecurity(){
@@ -1197,12 +1452,12 @@ scoreDesc.textContent='您的密码安全性较差，需要及时改进';
 // 显示安全问题
 const issuesContainer=document.getElementById('securityIssues');
 if(issues.length===0){
-issuesContainer.innerHTML='<p style="color:#52c41a">✅ 未发现安全问题，密码安全性良好</p>';
+issuesContainer.innerHTML='<p>✅ 未发现安全问题，密码安全性良好</p>';
 }else{
 let html='<ul style="margin-left:20px">';
 issues.forEach(issue=>{
 html+=`<li style="color:${issue.color};margin-bottom:8px">
-<strong>${issue.type}</strong> - ${issue.description} <span style="font-size:12px;color:#4e5969">(${issue.severity})</span>
+<strong>${issue.type}</strong> - ${issue.description} <span style="font-size:12px">(${issue.severity})</span>
 </li>`;
 });
 html+='</ul>';
