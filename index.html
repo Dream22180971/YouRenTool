@@ -539,7 +539,7 @@ GitHub: <a href="https://github.com/Dream22180971/KeyGuardTool" target="_blank">
 <div class="form-item"><label>网站URL</label><input type="text" placeholder="请输入"></div>
 <div class="form-item"><label>用户/邮箱</label><input type="text" placeholder="请输入"></div>
 <div class="form-item"><label>密码</label><div style="position:relative"><input type="password" placeholder="请输入或生成" id="passwordInput"><span class="eye-icon" onclick="togglePasswordVisibility(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;">👁️</span></div><button style="margin-top:6px" class="btn" onclick="genPwd()">生成安全密码</button></div>
-<div class="form-item"><label>分类</label><select><option>社交媒体</option><option>银行金融</option><option>邮箱</option><option>工作</option><option>其他</option></select></div>
+<div class="form-item"><label>分类</label><input type="text" id="categoryInput" placeholder="请输入分类名称"></div>
 <div class="form-item"><label>备注</label><textarea placeholder="可选"></textarea></div>
 <div class="form-btn"><button class="btn-default" onclick="closeModal()">取消</button><button class="btn-primary" onclick="savePwd()">保存</button></div>
 </div>
@@ -750,15 +750,6 @@ initAuth();
 });
 
 function openModal(){
-const categorySelect=document.querySelector('.form-item select');
-categorySelect.innerHTML='';
-const categories=getCategories();
-categories.forEach(category=>{
-const option=document.createElement('option');
-option.value=category.name;
-option.textContent=category.name;
-categorySelect.appendChild(option);
-});
 document.getElementById('modal').style.display='flex';
 }
 function closeModal(){document.getElementById('modal').style.display='none'}
@@ -792,7 +783,7 @@ document.getElementById('passwordInput').value=pwd;
 }
 
 function togglePasswordVisibility(eyeIcon){
-const passwordInput=document.getElementById('passwordInput');
+const passwordInput=eyeIcon.previousElementSibling;
 if(passwordInput.type==='password'){
 passwordInput.type='text';
 eyeIcon.textContent='👁️';
@@ -814,18 +805,15 @@ localStorage.setItem(STORAGE_KEY,JSON.stringify(passwords));
 function savePwd(){
 const service=document.querySelectorAll('.form-item input')[0].value;
 const username=document.querySelectorAll('.form-item input')[1].value;
-const password=document.querySelectorAll('.form-item input')[2].value;
-const category=document.querySelector('.form-item select').value;
+const password=document.getElementById('passwordInput').value;
+const category=document.getElementById('categoryInput').value.trim() || '其他';
 const note=document.querySelector('.form-item textarea').value;
 
-// 验证必填字段
-if(!service.trim()){
-showNotification('错误','请填写网站URL！');
-return;
-}
+// 网站URL为可选字段
 
-if(!username.trim()){
-showNotification('错误','请填写用户名/邮箱！');
+// 用户名长度限制
+if(username.length>1024){
+showNotification('错误','用户名长度不能超过1024字符！');
 return;
 }
 
@@ -834,10 +822,9 @@ showNotification('错误','请填写密码！');
 return;
 }
 
-// 验证网站URL格式
-const urlPattern=/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
-if(!urlPattern.test(service) && !service.includes('.')){
-showNotification('错误','请输入有效的网站URL或服务名称！');
+// 验证网站URL长度
+if(service.length>1024){
+showNotification('错误','网站URL长度不能超过1024字符！');
 return;
 }
 
@@ -862,11 +849,7 @@ showNotification('错误','密码应包含至少一个数字！');
 return;
 }
 
-// 验证用户名格式
-if(username.length<3){
-showNotification('错误','用户名长度至少为3位！');
-return;
-}
+
 
 const passwords=getPasswords();
 const today=new Date().toISOString().split('T')[0];
@@ -899,6 +882,23 @@ showNotification('成功','密码已保存！');
 }
 
 savePasswords(passwords);
+
+// 自动添加新分类到分类管理
+if(category && category!=='其他'){
+const existingCategories=getCategories();
+const existingCategoryNames=new Set(existingCategories.map(cat=>cat.name));
+
+if(!existingCategoryNames.has(category)){
+const newCategory={
+name:category,
+desc:`从密码添加的分类：${category}`
+};
+const updatedCategories=[...existingCategories,newCategory];
+saveCategories(updatedCategories);
+showNotification('成功',`已自动添加新分类"${category}"到分类管理`);
+}
+}
+
 renderPasswords();
 updateCategoryCounts();
 closeModal();
@@ -1170,6 +1170,38 @@ function saveImportedData(importedData){
 const existingPasswords=getPasswords();
 const updatedPasswords=[...existingPasswords,...importedData];
 savePasswords(updatedPasswords);
+
+// 提取导入数据中的所有分类
+const importedCategories=new Set();
+importedData.forEach(password=>{
+if(password.category&&password.category!=='其他'){
+importedCategories.add(password.category);
+}
+});
+
+// 获取现有的分类列表
+const existingCategories=getCategories();
+const existingCategoryNames=new Set(existingCategories.map(cat=>cat.name));
+
+// 添加新的分类到分类管理
+const newCategories=[];
+importedCategories.forEach(categoryName=>{
+if(!existingCategoryNames.has(categoryName)){
+newCategories.push({
+name:categoryName,
+desc:`从CSV导入的分类：${categoryName}`
+});
+existingCategoryNames.add(categoryName);
+}
+});
+
+// 如果有新的分类，更新分类列表
+if(newCategories.length>0){
+const updatedCategories=[...existingCategories,...newCategories];
+saveCategories(updatedCategories);
+showNotification('成功',`已自动添加 ${newCategories.length} 个新分类到分类管理`);
+}
+
 renderPasswords();
 }
 
@@ -1213,14 +1245,13 @@ return;
 
 const modal=document.getElementById('modal');
 const modalTitle=document.querySelector('.modal-title');
-const formItems=document.querySelectorAll('.form-item input, .form-item select, .form-item textarea');
 
 modalTitle.textContent='编辑密码';
-formItems[0].value=password.service;
-formItems[1].value=password.username;
-formItems[2].value=password.password;
-formItems[3].value=password.category;
-formItems[4].value=password.note||'';
+document.querySelectorAll('.form-item input')[0].value=password.service;
+document.querySelectorAll('.form-item input')[1].value=password.username;
+document.getElementById('passwordInput').value=password.password;
+document.getElementById('categoryInput').value=password.category;
+document.querySelector('.form-item textarea').value=password.note||'';
 
 modal.dataset.editingId=id;
 modal.style.display='flex';
