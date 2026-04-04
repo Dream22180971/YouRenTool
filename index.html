@@ -1068,6 +1068,8 @@ return;
 const mappedData=mapCSVData(csvData);
 console.log('映射后的数据:', mappedData);
 const validData=validateCSVData(mappedData);
+console.log('验证后的数据:', validData);
+console.log('验证前数量:', mappedData.length, '验证后数量:', validData.length);
 
 if(validData.length===0){
 showNotification('错误','没有找到有效的密码数据');
@@ -1150,27 +1152,30 @@ password[propertyName]=row[matchingHeader];
 // 如果没有找到分类，根据网站URL自动识别分类
 if(password.category==='其他' && password.service){
 const url=password.service.toLowerCase();
-console.log('检测URL:', url);
+console.log('开始自动分类，URL:', url);
 if(url.includes('qq.com') || url.includes('weixin') || url.includes('wechat') || url.includes('facebook') || url.includes('twitter') || url.includes('instagram') || url.includes('linkedin')){
 password.category='社交媒体';
-console.log('分类为：社交媒体');
+console.log('分类结果：社交媒体');
 }else if(url.includes('bank') || url.includes('支付宝') || url.includes('alipay') || url.includes('paypal') || url.includes('finance') || url.includes('money')){
 password.category='银行金融';
-console.log('分类为：银行金融');
+console.log('分类结果：银行金融');
 }else if(url.includes('mail') || url.includes('email') || url.includes('qq.com') || url.includes('163.com') || url.includes('gmail') || url.includes('outlook')){
 password.category='邮箱';
-console.log('分类为：邮箱');
-}else if(url.includes('work') || url.includes('company') || url.includes('business') || url.includes('office')){
-password.category='工作';
-console.log('分类为：工作');
+console.log('分类结果：邮箱');
 }else if(url.includes('github') || url.includes('gitlab') || url.includes('bitbucket') || url.includes('coding')){
 password.category='工作';
-console.log('分类为：工作（代码托管）');
+console.log('分类结果：工作（代码托管）');
 }else if(url.includes('cloud') || url.includes('tencent') || url.includes('aliyun') || url.includes('aws') || url.includes('azure')){
 password.category='工作';
-console.log('分类为：工作（云服务）');
+console.log('分类结果：工作（云服务）');
+}else if(url.includes('huawei') || url.includes('huawei.com')){
+password.category='工作';
+console.log('分类结果：工作（华为）');
+}else if(url.includes('work') || url.includes('company') || url.includes('business') || url.includes('office')){
+password.category='工作';
+console.log('分类结果：工作');
 }else{
-console.log('分类为：其他');
+console.log('分类结果：其他');
 }
 }
 
@@ -1277,9 +1282,38 @@ showNotification('成功','所有密码已清空');
 function refreshPasswordList(){
 currentPage=1;
 renderPasswords();
+
+// 同步分类到分类管理
+const passwords=getPasswords();
+const existingCategories=getCategories();
+const existingCategoryNames=new Set(existingCategories.map(cat=>cat.name));
+
+// 提取所有密码中的分类
+const passwordCategories=new Set();
+passwords.forEach(password=>{
+if(password.category&&password.category!=='其他'){
+passwordCategories.add(password.category);
+}
+});
+
+// 添加新的分类到分类管理
+const updatedCategories=[...existingCategories];
+passwordCategories.forEach(categoryName=>{
+if(!existingCategoryNames.has(categoryName)){
+updatedCategories.push({
+name:categoryName,
+desc:`从密码同步的分类：${categoryName}`
+});
+existingCategoryNames.add(categoryName);
+}
+});
+
+// 更新分类列表
+saveCategories(updatedCategories);
 renderCategories();
 updateCategoryCounts();
-showNotification('成功','密码列表已刷新');
+
+showNotification('成功','密码列表已刷新，分类已同步到分类管理');
 }
 
 function editPassword(id){
