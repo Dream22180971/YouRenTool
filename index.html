@@ -1139,7 +1139,8 @@ return sourceFields.some(sourceField=>headerLower.includes(sourceField));
 });
 
 if(matchingHeader){
-password[fieldMapping[targetField][0]]=row[matchingHeader];
+const propertyName=fieldMapping[targetField][0];
+password[propertyName]=row[matchingHeader];
 }
 });
 
@@ -1203,12 +1204,21 @@ existingCategoryNames.add(categoryName);
 }
 });
 
-// 如果有新的分类，更新分类列表
-if(newCategories.length>0){
-const updatedCategories=[...existingCategories,...newCategories];
-saveCategories(updatedCategories);
-showNotification('成功',`已自动添加 ${newCategories.length} 个新分类到分类管理`);
+// 添加所有导入的分类到分类管理
+const updatedCategories=[...existingCategories];
+importedCategories.forEach(categoryName=>{
+if(!existingCategoryNames.has(categoryName)){
+updatedCategories.push({
+name:categoryName,
+desc:`从CSV导入的分类：${categoryName}`
+});
+existingCategoryNames.add(categoryName);
 }
+});
+
+// 更新分类列表
+saveCategories(updatedCategories);
+showNotification('成功',`已处理 ${importedCategories.size} 个分类，自动添加新分类到分类管理`);
 
 renderPasswords();
 renderCategories();
