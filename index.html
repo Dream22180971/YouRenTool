@@ -1058,12 +1058,15 @@ reader.onload=function(e){
 try{
 const csvContent=e.target.result;
 const csvData=parseCSV(csvContent);
+console.log('CSV文件表头:', csvData.headers);
+console.log('CSV文件数据:', csvData.data);
 if(csvData.data.length===0){
 showNotification('错误','CSV文件内容为空');
 return;
 }
 
 const mappedData=mapCSVData(csvData);
+console.log('映射后的数据:', mappedData);
 const validData=validateCSVData(mappedData);
 
 if(validData.length===0){
@@ -1143,6 +1146,20 @@ const propertyName=fieldMapping[targetField][0];
 password[propertyName]=row[matchingHeader];
 }
 });
+
+// 如果没有找到分类，根据网站URL自动识别分类
+if(password.category==='其他' && password.service){
+const url=password.service.toLowerCase();
+if(url.includes('qq.com') || url.includes('weixin') || url.includes('wechat') || url.includes('facebook') || url.includes('twitter') || url.includes('instagram') || url.includes('linkedin')){
+password.category='社交媒体';
+}else if(url.includes('bank') || url.includes('支付宝') || url.includes('alipay') || url.includes('paypal') || url.includes('finance') || url.includes('money')){
+password.category='银行金融';
+}else if(url.includes('mail') || url.includes('email') || url.includes('qq.com') || url.includes('163.com') || url.includes('gmail') || url.includes('outlook')){
+password.category='邮箱';
+}else if(url.includes('work') || url.includes('company') || url.includes('business') || url.includes('office')){
+password.category='工作';
+}
+}
 
 // 如果没有找到服务名称，尝试从其他字段获取
 if(!password.service){
