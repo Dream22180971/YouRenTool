@@ -1291,7 +1291,7 @@ const existingCategoryNames=new Set(existingCategories.map(cat=>cat.name));
 // 提取所有密码中的分类
 const passwordCategories=new Set();
 passwords.forEach(password=>{
-if(password.category&&password.category!=='其他'){
+if(password.category){
 passwordCategories.add(password.category);
 }
 });
