@@ -1207,6 +1207,8 @@ showNotification('成功',`已自动添加 ${newCategories.length} 个新分类�
 }
 
 renderPasswords();
+renderCategories();
+updateCategoryCounts();
 }
 
 function deletePassword(id){
@@ -1236,6 +1238,8 @@ showNotification('成功','所有密码已清空');
 function refreshPasswordList(){
 currentPage=1;
 renderPasswords();
+renderCategories();
+updateCategoryCounts();
 showNotification('成功','密码列表已刷新');
 }
 
