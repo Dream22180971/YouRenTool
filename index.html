@@ -1150,14 +1150,27 @@ password[propertyName]=row[matchingHeader];
 // 如果没有找到分类，根据网站URL自动识别分类
 if(password.category==='其他' && password.service){
 const url=password.service.toLowerCase();
+console.log('检测URL:', url);
 if(url.includes('qq.com') || url.includes('weixin') || url.includes('wechat') || url.includes('facebook') || url.includes('twitter') || url.includes('instagram') || url.includes('linkedin')){
 password.category='社交媒体';
+console.log('分类为：社交媒体');
 }else if(url.includes('bank') || url.includes('支付宝') || url.includes('alipay') || url.includes('paypal') || url.includes('finance') || url.includes('money')){
 password.category='银行金融';
+console.log('分类为：银行金融');
 }else if(url.includes('mail') || url.includes('email') || url.includes('qq.com') || url.includes('163.com') || url.includes('gmail') || url.includes('outlook')){
 password.category='邮箱';
+console.log('分类为：邮箱');
 }else if(url.includes('work') || url.includes('company') || url.includes('business') || url.includes('office')){
 password.category='工作';
+console.log('分类为：工作');
+}else if(url.includes('github') || url.includes('gitlab') || url.includes('bitbucket') || url.includes('coding')){
+password.category='工作';
+console.log('分类为：工作（代码托管）');
+}else if(url.includes('cloud') || url.includes('tencent') || url.includes('aliyun') || url.includes('aws') || url.includes('azure')){
+password.category='工作';
+console.log('分类为：工作（云服务）');
+}else{
+console.log('分类为：其他');
 }
 }
 
@@ -1200,6 +1213,7 @@ savePasswords(updatedPasswords);
 // 提取导入数据中的所有分类
 const importedCategories=new Set();
 importedData.forEach(password=>{
+console.log('密码数据:', password);
 if(password.category&&password.category!=='其他'){
 importedCategories.add(password.category);
 }
@@ -1212,18 +1226,6 @@ const existingCategories=getCategories();
 const existingCategoryNames=new Set(existingCategories.map(cat=>cat.name));
 
 console.log('现有的分类:', existingCategories.map(cat=>cat.name));
-
-// 添加新的分类到分类管理
-const newCategories=[];
-importedCategories.forEach(categoryName=>{
-if(!existingCategoryNames.has(categoryName)){
-newCategories.push({
-name:categoryName,
-desc:`从CSV导入的分类：${categoryName}`
-});
-existingCategoryNames.add(categoryName);
-}
-});
 
 // 添加所有导入的分类到分类管理
 const updatedCategories=[...existingCategories];
