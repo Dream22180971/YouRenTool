@@ -701,6 +701,10 @@ saveCategories([]);
 renderCategories();
 updateCategoryCounts();
 
+// 清空表单输入框，防止历史数据填充
+document.querySelectorAll('.form-item input').forEach(input => input.value = '');
+document.querySelector('.form-item textarea').value = '';
+
 // 显示设置密码界面
 document.body.classList.remove('locked');
 document.getElementById('lockModal').style.display = 'none';
