@@ -53,6 +53,17 @@ body.dark .modal-content{background:#2d2d2d}
 body.dark .form-item label{color:#d0d0d0}
 .form-item input,.form-item select,.form-item textarea{width:100%;height:36px;border:1px solid #e5e6eb;border-radius:4px;padding:0 10px;outline:none;background:#fff;color:#1d2129}
 body.dark .form-item input, body.dark .form-item select, body.dark .form-item textarea{background:#3d3d3d;border-color:#4d4d4d;color:#e0e0e0}
+
+/* 锁定模态框特殊样式 */
+#lockModal,#authModal{background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+body.dark #lockModal,body.dark #authModal{background:rgba(0,0,0,0.8)}
+body.locked .container,body.locked .top-nav{filter:blur(10px);-webkit-filter:blur(10px);pointer-events:none}
+body.locked .modal{filter:none;-webkit-filter:none;pointer-events:auto}
+
+/* 深色模式下锁定和登录界面文字颜色 */
+body.dark #lockModal p,body.dark #authModal p{color:#d0d0d0}
+body.dark #lockModal .modal-title,body.dark #authModal .modal-title{color:#f0f0f0}
+body.dark #lockModal .form-item label,body.dark #authModal .form-item label{color:#d0d0d0}
 .form-item textarea{height:70px;padding:8px 10px;resize:none}
 .form-btn{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .btn-primary{background:#165dff;color:#fff;border:none;padding:8px 16px}
@@ -120,12 +131,77 @@ body.dark .btn-primary:hover{background:#6bb6ff}
 </head>
 <body>
 
+<!-- 登录模态框 -->
+<div id="authModal" class="modal" style="display:flex;z-index:200">
+<div class="modal-content" style="width:400px">
+<h3 class="modal-title" id="authTitle">设置登录密码</h3>
+<div id="setupPasswordForm">
+<div class="form-item">
+<label>登录密码</label>
+<div style="position:relative">
+<input type="password" id="setupPassword" placeholder="请设置登录密码（至少8位）" onkeypress="if(event.key === 'Enter') setupLoginPassword()">
+<span class="eye-icon" onclick="togglePasswordVisibility(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;">🔒</span>
+</div>
+</div>
+<div class="form-item">
+<label>确认密码</label>
+<div style="position:relative">
+<input type="password" id="confirmPassword" placeholder="请再次输入登录密码" onkeypress="if(event.key === 'Enter') setupLoginPassword()">
+<span class="eye-icon" onclick="togglePasswordVisibility(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;">🔒</span>
+</div>
+</div>
+<div class="form-btn">
+<button class="btn btn-primary" onclick="setupLoginPassword()">确定</button>
+</div>
+</div>
+<div id="loginForm" style="display:none">
+<div class="form-item">
+<label>登录密码</label>
+<div style="position:relative">
+<input type="password" id="loginPassword" placeholder="请输入登录密码" onkeypress="if(event.key === 'Enter') login()">
+<span class="eye-icon" onclick="togglePasswordVisibility(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;">🔒</span>
+</div>
+</div>
+<div class="form-btn">
+<button class="btn btn-primary" onclick="login()">登录</button>
+</div>
+<div style="text-align:center;margin-top:10px">
+<button class="btn btn-default" onclick="resetPassword()" style="font-size:12px;padding:4px 8px">忘记密码？重置密码</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 锁定模态框 -->
+<div id="lockModal" class="modal" style="display:none;z-index:200">
+<div class="modal-content" style="width:400px">
+<h3 class="modal-title">🔒 系统已锁定</h3>
+<p style="color:#4e5969;margin-bottom:20px">长时间无操作，系统已自动锁定</p>
+<div class="form-item">
+<label>请输入登录密码解锁</label>
+<div style="position:relative">
+<input type="password" id="unlockPassword" placeholder="请输入登录密码" onkeypress="if(event.key === 'Enter') unlock()">
+<span class="eye-icon" onclick="togglePasswordVisibility(this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer;">🔒</span>
+</div>
+</div>
+<div class="form-btn">
+<button class="btn btn-primary" onclick="unlock()">解锁</button>
+</div>
+<div style="text-align:center;margin-top:10px">
+<button class="btn btn-default" onclick="resetPassword()" style="font-size:12px;padding:4px 8px">忘记密码？重置密码</button>
+</div>
+</div>
+</div>
+
 <div class="top-nav">
 <div class="logo" onclick="navigateTo('home')">
-<span class="logo-icon">🔒</span>
+<span class="logo-icon">🛡️</span>
 <span class="logo-text">密码管理器</span>
 </div>
 <div class="slogan">安全守护，便捷管理｜本地存储，数据不离本机</div>
+<div style="display:flex;align-items:center;gap:10px">
+<button class="btn btn-default" onclick="lockSystem()">🔒 锁定</button>
+</div>
 </div>
 
 <div class="container">
@@ -368,9 +444,13 @@ body.dark .btn-primary:hover{background:#6bb6ff}
 <h4 class="help-title">常见问题</h4>
 <p class="help-content">
 <strong>Q: 忘记主密码怎么办？</strong><br>
-A: 如果忘记主密码，将无法恢复密码数据，请务必妥善保管主密码。<br><br>
+A: 如果忘记主密码，可以点击"忘记密码？重置密码"按钮，重置密码将清空所有密码数据，请谨慎操作。<br><br>
 <strong>Q: 如何备份密码数据？</strong><br>
-A: 在设置页面点击"导出数据"按钮即可备份所有密码。
+A: 在设置页面点击"导出数据"按钮即可备份所有密码。<br><br>
+<strong>Q: 系统为什么会自动锁定？</strong><br>
+A: 系统会在5分钟无操作后自动锁定，以保护您的密码安全。<br><br>
+<strong>Q: 如何显示或隐藏密码？</strong><br>
+A: 点击密码输入框右侧的小眼睛图标即可切换密码的显示/隐藏状态。
 </p>
 </div>
 </div>
@@ -380,7 +460,7 @@ A: 在设置页面点击"导出数据"按钮即可备份所有密码。
 <div class="card">
 <h3>关于密码管理器</h3>
 <div style="text-align:left;margin-bottom:30px">
-<div style="font-size:64px;margin-bottom:20px">🔒</div>
+<div style="font-size:64px;margin-bottom:20px">🛡️</div>
 <div style="font-size:24px;font-weight:bold;margin-bottom:10px">密码管理器</div>
 <div style="margin-bottom:20px">版本 1.0.0</div>
 </div>
@@ -420,7 +500,13 @@ A: 在设置页面点击"导出数据"按钮即可备份所有密码。
 - 添加数据备份功能<br>
 - 实现搜索和筛选功能<br>
 - 添加清空列表和刷新功能<br>
-- 优化用户界面体验
+- 添加用户认证功能（登录密码设置和验证）<br>
+- 实现会话超时自动锁定功能<br>
+- 添加重置密码功能<br>
+- 添加密码显示/隐藏功能<br>
+- 优化用户界面体验<br>
+- 修复深色模式文字对比度问题<br>
+- 优化品牌图标（盾牌形状）
 </p>
 </div>
 
@@ -480,11 +566,188 @@ GitHub: <a href="https://github.com/Dream22180971/KeyGuardTool" target="_blank">
 const STORAGE_KEY = 'password_manager_data';
 const CATEGORIES_KEY = 'password_manager_categories';
 const SETTINGS_KEY = 'password_manager_settings';
+const AUTH_KEY = 'password_manager_auth';
+const SESSION_KEY = 'password_manager_session';
 let currentEditingCategory = null;
 let currentPage = 1;
 const itemsPerPage = 10;
 let currentCategory='all';
 let currentSort='none';
+
+// 会话超时设置（5分钟）
+const SESSION_TIMEOUT = 5 * 60 * 1000;
+let sessionTimer = null;
+let lastActivityTime = Date.now();
+
+// 初始化认证系统
+function initAuth() {
+const authData = localStorage.getItem(AUTH_KEY);
+document.body.classList.add('locked');
+if (!authData) {
+// 首次使用，显示设置密码界面
+document.getElementById('authModal').style.display = 'flex';
+document.getElementById('setupPasswordForm').style.display = 'block';
+document.getElementById('loginForm').style.display = 'none';
+document.getElementById('authTitle').textContent = '设置登录密码';
+} else {
+// 已设置密码，显示登录界面
+document.getElementById('authModal').style.display = 'flex';
+document.getElementById('setupPasswordForm').style.display = 'none';
+document.getElementById('loginForm').style.display = 'block';
+document.getElementById('authTitle').textContent = '登录';
+}
+}
+
+// 设置登录密码
+function setupLoginPassword() {
+const password = document.getElementById('setupPassword').value;
+const confirmPassword = document.getElementById('confirmPassword').value;
+
+if (!password.trim()) {
+showNotification('错误', '请输入登录密码！');
+return;
+}
+
+if (password.length < 8) {
+showNotification('错误', '密码长度至少为8位！');
+return;
+}
+
+if (password !== confirmPassword) {
+showNotification('错误', '两次输入的密码不一致！');
+return;
+}
+
+// 存储密码（实际应用中应该加密存储）
+const authData = {
+password: password,
+createdAt: new Date().toISOString()
+};
+localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
+
+showNotification('成功', '登录密码设置成功！');
+document.body.classList.remove('locked');
+document.getElementById('authModal').style.display = 'none';
+startSession();
+initActivityListener();
+}
+
+// 登录
+function login() {
+const password = document.getElementById('loginPassword').value;
+const authData = JSON.parse(localStorage.getItem(AUTH_KEY));
+
+if (!password.trim()) {
+showNotification('错误', '请输入登录密码！');
+return;
+}
+
+if (password !== authData.password) {
+showNotification('错误', '登录密码错误！');
+return;
+}
+
+showNotification('成功', '登录成功！');
+document.body.classList.remove('locked');
+document.getElementById('authModal').style.display = 'none';
+document.getElementById('loginPassword').value = '';
+startSession();
+initActivityListener();
+}
+
+// 锁定系统
+function lockSystem() {
+document.body.classList.add('locked');
+document.getElementById('lockModal').style.display = 'flex';
+document.getElementById('unlockPassword').value = '';
+stopSession();
+}
+
+// 解锁
+function unlock() {
+const password = document.getElementById('unlockPassword').value;
+const authData = JSON.parse(localStorage.getItem(AUTH_KEY));
+
+if (!password.trim()) {
+showNotification('错误', '请输入登录密码！');
+return;
+}
+
+if (password !== authData.password) {
+showNotification('错误', '登录密码错误！');
+return;
+}
+
+showNotification('成功', '解锁成功！');
+document.body.classList.remove('locked');
+document.getElementById('lockModal').style.display = 'none';
+document.getElementById('unlockPassword').value = '';
+startSession();
+}
+
+// 重置密码
+function resetPassword() {
+if (confirm('⚠️ 警告！重置密码将清空所有密码数据，且无法恢复。确定要继续吗？')) {
+// 删除所有数据
+localStorage.removeItem(STORAGE_KEY);
+localStorage.removeItem(CATEGORIES_KEY);
+localStorage.removeItem(AUTH_KEY);
+
+// 清空页面数据
+savePasswords([]);
+saveCategories([]);
+
+// 显示设置密码界面
+document.body.classList.remove('locked');
+document.getElementById('lockModal').style.display = 'none';
+document.getElementById('authModal').style.display = 'flex';
+document.getElementById('setupPasswordForm').style.display = 'block';
+document.getElementById('loginForm').style.display = 'none';
+document.getElementById('authTitle').textContent = '设置登录密码';
+
+showNotification('成功', '已重置密码，请设置新的登录密码！');
+}
+}
+
+// 开始会话
+function startSession() {
+lastActivityTime = Date.now();
+sessionTimer = setTimeout(() => {
+lockSystem();
+}, SESSION_TIMEOUT);
+}
+
+// 停止会话
+function stopSession() {
+if (sessionTimer) {
+clearTimeout(sessionTimer);
+sessionTimer = null;
+}
+}
+
+// 重置会话计时器
+function resetSessionTimer() {
+lastActivityTime = Date.now();
+stopSession();
+startSession();
+}
+
+// 初始化活动监听器
+function initActivityListener() {
+// 监听鼠标移动
+document.addEventListener('mousemove', resetSessionTimer);
+// 监听键盘输入
+document.addEventListener('keydown', resetSessionTimer);
+// 监听鼠标点击
+document.addEventListener('click', resetSessionTimer);
+// 监听滚动
+document.addEventListener('scroll', resetSessionTimer);
+}
+
+// 页面加载时初始化认证系统
+window.addEventListener('load', () => {
+initAuth();
+});
 
 function openModal(){
 const categorySelect=document.querySelector('.form-item select');
