@@ -1188,9 +1188,13 @@ importedCategories.add(password.category);
 }
 });
 
+console.log('导入的分类:', Array.from(importedCategories));
+
 // 获取现有的分类列表
 const existingCategories=getCategories();
 const existingCategoryNames=new Set(existingCategories.map(cat=>cat.name));
+
+console.log('现有的分类:', existingCategories.map(cat=>cat.name));
 
 // 添加新的分类到分类管理
 const newCategories=[];
@@ -1215,6 +1219,8 @@ desc:`从CSV导入的分类：${categoryName}`
 existingCategoryNames.add(categoryName);
 }
 });
+
+console.log('更新后的分类:', updatedCategories.map(cat=>cat.name));
 
 // 更新分类列表
 saveCategories(updatedCategories);
@@ -1393,6 +1399,11 @@ document.querySelectorAll('.sidebar-item').forEach(item=>item.classList.remove('
 document.getElementById(pageId).classList.add('active');
 if(event && event.target){
 event.target.classList.add('active');
+}
+
+// 当切换到分类管理页面时，更新分类显示
+if(pageId==='categories'){
+renderCategories();
 }
 }
 
