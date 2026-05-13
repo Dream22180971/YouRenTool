@@ -3,6 +3,7 @@
 ## 项目简介
 
 游刃是一款安全、便捷的本地密码管理工具，取自庄子「游刃有余」之意——管理密码，从容不迫。采用浏览器本地存储技术，确保数据完全保存在用户本地设备，无需网络连接即可使用。
+<img width="1920" height="708" alt="image" src="https://github.com/user-attachments/assets/5cd2aa93-2cef-4e29-9b52-0eafd9286dc2" />
 
 ## 核心功能
 
