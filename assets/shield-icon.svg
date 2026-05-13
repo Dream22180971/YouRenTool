@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<defs>
+<linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" style="stop-color:#4080ff;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#165dff;stop-opacity:1" />
+</linearGradient>
+<linearGradient id="innerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+<stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.1" />
+</linearGradient>
+</defs>
+<!-- 盾牌主体 -->
+<path d="M256 32 L448 96 L448 224 C448 352 352 448 256 480 C160 448 64 352 64 224 L64 96 Z" fill="url(#shieldGrad)"/>
+<!-- 盾牌内层高光 -->
+<path d="M256 64 L416 112 L416 224 C416 328 336 408 256 440 C176 408 96 328 96 224 L96 112 Z" fill="url(#innerGrad)"/>
+<!-- 盾牌中心图案 - 简化的钥匙孔/锁孔 -->
+<circle cx="256" cy="220" r="50" fill="white"/>
+<rect x="240" y="260" width="32" height="80" rx="4" fill="white"/>
+</svg>
