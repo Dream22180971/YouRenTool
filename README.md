@@ -15,7 +15,7 @@
 
 ---
 
-## Why YouRen
+## 💡 Why YouRen
 
 Some people simply do not want their password vault hosted by a third party.
 
@@ -31,7 +31,7 @@ YouRen takes the opposite approach:
 
 ---
 
-## Get it
+## 📦 Get it
 
 Visit the product site:
 
@@ -55,7 +55,7 @@ npm run tauri dev
 
 ---
 
-## Core Features
+## ✨ Core Features
 
 | Feature | Description |
 |---|---|
@@ -70,7 +70,7 @@ npm run tauri dev
 
 ---
 
-## Privacy Model
+## 🔐 Privacy Model
 
 YouRen is intentionally local-first.
 
@@ -83,7 +83,7 @@ For backups, use export and store the backup somewhere you trust.
 
 ---
 
-## Architecture
+## 🧩 Architecture
 
 ```text
 Desktop Shell
@@ -100,7 +100,7 @@ Stored on the user's machine
 
 ---
 
-## Current Limitations
+## ⚠️ Current Limitations
 
 - no browser extension yet
 - no automatic multi-device sync
@@ -109,7 +109,7 @@ Stored on the user's machine
 
 ---
 
-## Roadmap
+## 🗺 Roadmap
 
 - [x] password CRUD
 - [x] local-first storage
@@ -124,7 +124,7 @@ Stored on the user's machine
 
 ---
 
-## License
+## 📄 License
 
 [MIT](./LICENSE)
 
