@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Space+Grotesk&weight=700&size=30&duration=2300&pause=900&color=165DFF&center=true&vCenter=true&width=900&lines=YOUR+PASSWORDS%2C+YOUR+COMPUTER;LOCAL-FIRST+PASSWORD+MANAGEMENT" alt="Typing SVG" />
-
 # YouRen
 
 **A local-first password manager that keeps your secrets on your own computer.**
