@@ -1,3 +1,37 @@
+A local-first password manager that keeps your secrets on your own computer. / 一款本地优先的密码管理器，你的密码只保存在自己的电脑上。
+
+<!-- README-V2-BILINGUAL -->
+
+# YouRenTool
+
+> **EN:** A local-first password manager that keeps your secrets on your own computer.  
+> **中文：** 一款本地优先的密码管理器，你的密码只保存在自己的电脑上。
+
+## Demo / 演示
+
+[Product Site / 产品站](https://youren.seanwalter.top) · Demo GIF is not yet stored in this repo; screenshots/details remain below. / 当前仓库尚未存放 GIF，截图与详细说明保留在下方。
+
+## Quick Start / 5 分钟快速开始
+
+```bash
+git clone https://github.com/Dream22180971/YouRenTool.git
+cd YouRenTool
+npm install
+npm run dev
+```
+
+> **EN:** The commands above are intentionally kept short: clone, install, run. Project-specific configuration and advanced usage stay in the detailed documentation below.  
+> **中文：** 上面的命令刻意保持最短路径：克隆、安装、运行。项目特定配置与高级用法继续保留在下方详细文档中。
+
+## Why this project / 为什么做这个项目
+
+**EN:** This repository is built around one concrete problem and aims to be understandable, runnable and useful before becoming complex.
+
+**中文：** 这个仓库围绕一个明确问题构建，优先做到易理解、能运行、真正有用，再逐步增加复杂能力。
+
+---
+
+<!-- ORIGINAL-DOCS -->
 # 游刃（YouRen）
 
 > 本地密码管家 — 你的密码，只存在你的电脑上。
