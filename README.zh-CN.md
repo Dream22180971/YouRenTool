@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Space+Grotesk&weight=700&size=30&duration=2300&pause=900&color=165DFF&center=true&vCenter=true&width=900&lines=YOUR+PASSWORDS%2C+YOUR+COMPUTER;LOCAL-FIRST+PASSWORD+MANAGEMENT" alt="Typing SVG" />
-
 # 游刃 · YouRen
 
 **一款本地优先的密码管理器，你的密码只保存在自己的电脑上。**
