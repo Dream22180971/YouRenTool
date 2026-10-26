@@ -1,10 +1,10 @@
 <div align="center">
 
-# YouRen
+# 游刃 · YouRen
 
-**A local-first password manager that keeps your secrets on your own computer.**
+**一款本地优先的密码管理器，你的密码只保存在自己的电脑上。**
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
+[简体中文](./README.md) | [English](./README.en.md)
 
 [![Product Site](https://img.shields.io/badge/PRODUCT-youren.seanwalter.top-165DFF?style=for-the-badge)](https://youren.seanwalter.top)
 [![Tauri](https://img.shields.io/badge/Tauri-1.x-24C8DB?style=for-the-badge&logo=tauri&logoColor=white)](https://tauri.app)
@@ -15,29 +15,29 @@
 
 ---
 
-## 💡 Why YouRen
+## 💡 为什么做
 
-Some people simply do not want their password vault hosted by a third party.
+有些人就是不希望把密码库交给第三方服务器。
 
-YouRen takes the opposite approach:
+游刃选择另一条路线：
 
-- no account system
-- no mandatory cloud
-- local storage first
-- portable desktop usage
-- export your own data when you want
+- 不要求注册账号
+- 不依赖云端
+- 数据本地优先
+- 可以作为便携桌面工具使用
+- 需要备份时由自己导出
 
-> Your passwords stay on your computer.
+> 你的密码，留在你的电脑上。
 
 ---
 
-## 📦 Get it
+## 📦 直接使用
 
-Visit the product site:
+产品站：
 
 **https://youren.seanwalter.top**
 
-The project is designed as a desktop app. For development:
+开发模式：
 
 ```bash
 git clone https://github.com/Dream22180971/YouRenTool.git
@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-For the Tauri desktop shell:
+Tauri 桌面壳：
 
 ```bash
 npm run tauri dev
@@ -55,35 +55,35 @@ npm run tauri dev
 
 ---
 
-## ✨ Core Features
+## ✨ 核心功能
 
-| Feature | Description |
+| 功能 | 说明 |
 |---|---|
-| Password vault | add, edit, delete, search and categorize credentials |
-| Password generator | generate stronger passwords |
-| Screenshot parsing | paste screenshots to help fill credential fields |
-| Security audit | detect weak or repeated passwords |
-| CSV import / export | move or back up your data |
-| Clipboard protection | clear copied passwords after a short interval |
-| Auto lock | lock after inactivity |
-| Themes | light / dark appearance |
+| 密码库 | 添加、编辑、删除、搜索和分类 |
+| 密码生成器 | 一键生成更强的密码 |
+| 截图解析 | 粘贴截图辅助填写网站 / 用户名 / 密码 |
+| 安全审计 | 检测弱密码和重复密码 |
+| CSV 导入导出 | 迁移或备份自己的数据 |
+| 剪贴板保护 | 一段时间后清除已复制密码 |
+| 自动锁定 | 无操作后自动锁定 |
+| 主题 | 浅色 / 深色 |
 
 ---
 
-## 🔐 Privacy Model
+## 🔐 隐私模型
 
-YouRen is intentionally local-first.
+游刃明确采用本地优先：
 
-- no required registration
-- no cloud sync by default
-- no central password database
-- no subscription dependency
+- 不强制注册
+- 默认不做云同步
+- 没有中央密码数据库
+- 不依赖订阅服务
 
-For backups, use export and store the backup somewhere you trust.
+需要备份时，请导出并保存在你信任的位置。
 
 ---
 
-## 🧩 Architecture
+## 🧩 技术架构
 
 ```text
 Desktop Shell
@@ -95,32 +95,32 @@ Vite · HTML / CSS / JavaScript
    │
    ▼
 Local data
-Stored on the user's machine
+保存在用户自己的设备
 ```
 
 ---
 
-## ⚠️ Current Limitations
+## ⚠️ 当前限制
 
-- no browser extension yet
-- no automatic multi-device sync
-- backup is user-managed
-- local-first means device security still matters
+- 暂无浏览器扩展
+- 暂无自动多设备同步
+- 备份由用户自行管理
+- 本地优先不等于设备本身不需要安全防护
 
 ---
 
-## 🗺 Roadmap
+## 🗺 路线图
 
-- [x] password CRUD
-- [x] local-first storage
-- [x] password generation
-- [x] security audit
-- [x] CSV import / export
-- [x] auto lock
-- [ ] browser extension
-- [ ] stronger backup workflow
-- [ ] optional encrypted sync
-- [ ] richer credential templates
+- [x] 密码增删改查
+- [x] 本地存储
+- [x] 密码生成
+- [x] 安全审计
+- [x] CSV 导入导出
+- [x] 自动锁定
+- [ ] 浏览器扩展
+- [ ] 更完善的备份流程
+- [ ] 可选加密同步
+- [ ] 更丰富的凭据模板
 
 ---
 
@@ -130,6 +130,6 @@ Stored on the user's machine
 
 <div align="center">
 
-**Convenience is useful. Control is better.**
+**方便很重要，掌控权更重要。**
 
 </div>
